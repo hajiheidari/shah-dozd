@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -6,7 +7,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../engine/engine.dart';
 import '../l10n/strings.dart';
+import '../shop/recovery.dart';
 import '../shop/wallet.dart';
+import 'native.dart';
+import 'stats.dart';
 
 /// User preferences. Rules-related ones are copied into each new tournament.
 class Settings {
@@ -77,20 +81,27 @@ class Settings {
 
 /// Everything the app keeps between launches, in local storage only.
 class AppState extends ChangeNotifier {
-  AppState._(this._prefs, this.settings, this.savedPlayers, this.tournament, this._fallbackLang, [Wallet? wallet])
-      : wallet = wallet ?? Wallet();
+  AppState._(this._prefs, this.settings, this.savedPlayers, this.tournament, this._fallbackLang, [Wallet? wallet, Stats? stats])
+      : wallet = wallet ?? Wallet(),
+        stats = stats ?? Stats();
 
   static const _kSettings = 'settings.v1';
   static const _kPlayers = 'players.v1';
   static const _kTournament = 'tournament.v1';
   static const _kWallet = 'wallet.v1';
+  static const _kStats = 'stats.v1';
+  static const _kICloud = 'backup.v1';
 
   final SharedPreferences? _prefs;
   Settings settings;
   List<Player> savedPlayers;
   Tournament? tournament;
   final Wallet wallet;
+  final Stats stats;
   final Lang _fallbackLang;
+
+  /// True when nothing was stored yet (first launch or a reinstall).
+  bool freshInstall = false;
 
   /// Loads saved state. Corrupt entries are dropped rather than crashing.
   static Future<AppState> load({Lang? forcedLang}) async {
@@ -120,7 +131,8 @@ class AppState extends ChangeNotifier {
     } catch (_) {}
     final t = read(_kTournament, Tournament.fromJson);
     final wallet = read(_kWallet, Wallet.fromJson);
-    return AppState._(prefs, settings, players, t, _deviceLang(), wallet);
+    final stats = read(_kStats, Stats.fromJson);
+    return AppState._(prefs, settings, players, t, _deviceLang(), wallet, stats)..freshInstall = prefs?.getString(_kWallet) == null;
   }
 
   /// For tests: in-memory state.
@@ -197,10 +209,116 @@ class AppState extends ChangeNotifier {
   void saveWallet() {
     _write(_kWallet, jsonEncode(wallet.toJson()));
     notifyListeners();
+    _reportGameCenter();
+  }
+
+  /// After every resolved round.
+  void recordRound(ModeId mode, RoundOutcome outcome, {required bool tournamentFinished}) {
+    stats.recordRound(mode, outcome);
+    if (tournamentFinished) stats.recordTournament();
+    _write(_kStats, jsonEncode(stats.toJson()));
+    _reportGameCenter();
+  }
+
+  void _reportGameCenter() {
+    Native.gameCenterReport(leaderboard: Stats.leaderboard, score: stats.rounds, achievements: stats.achievements(wallet));
+  }
+
+  // ---- Backup: iCloud (iOS), Android Auto Backup (by the system), code ----
+
+  /// Everything worth keeping, as one JSON object.
+  Map<String, Object?> snapshot() => {
+        'v': 1,
+        'at': DateTime.now().toUtc().toIso8601String(),
+        'settings': settings.toJson(),
+        'players': [for (final p in savedPlayers) p.toJson()],
+        'tournament': tournament?.toJson(),
+        'wallet': wallet.toJson(),
+        'stats': stats.toJson(),
+      };
+
+  /// Restores a [snapshot]: coins and counters keep the larger value, bought
+  /// items are merged, the rest is taken from the backup.
+  void restoreSnapshot(Map<String, Object?> j) {
+    try {
+      final w = Wallet.fromJson((j['wallet'] as Map).cast());
+      _mergeWallet(coins: w.coins, owned: w.owned, back: w.back, theme: w.theme, deck: w.deck);
+      wallet.welcomed = true;
+      stats.mergeMax(Stats.fromJson((j['stats'] as Map? ?? const {}).cast()));
+      if (j['settings'] is Map) settings = Settings.fromJson((j['settings'] as Map).cast());
+      if (j['players'] is List && savedPlayers.isEmpty) {
+        savedPlayers = [for (final p in j['players'] as List) Player.fromJson((p as Map).cast())];
+      }
+      if (j['tournament'] is Map && tournament == null) tournament = Tournament.fromJson((j['tournament'] as Map).cast());
+    } catch (_) {
+      return;
+    }
+    _saveAll();
+  }
+
+  /// Restores from a recovery code; false when the code is wrong.
+  bool restoreCode(String code) {
+    final d = RecoveryCode.decode(code);
+    if (d == null) return false;
+    _mergeWallet(coins: d.coins, owned: d.owned, back: d.back, theme: d.theme, deck: d.deck);
+    wallet.welcomed = true;
+    if (d.rounds > stats.rounds) stats.rounds = d.rounds;
+    _saveAll();
+    return true;
+  }
+
+  String recoveryCode() => RecoveryCode.encode(RecoveryData(
+        coins: wallet.coins,
+        owned: wallet.owned,
+        back: wallet.back,
+        theme: wallet.theme,
+        deck: wallet.deck,
+        rounds: stats.rounds,
+      ));
+
+  void _mergeWallet({required int coins, required Set<String> owned, required String back, required String theme, required String deck}) {
+    if (coins > wallet.coins) wallet.coins = coins;
+    wallet.owned.addAll(owned);
+    wallet.equip(back);
+    wallet.equip(theme);
+    wallet.equip(deck);
+  }
+
+  void _saveAll() {
+    _write(_kSettings, jsonEncode(settings.toJson()));
+    _write(_kPlayers, jsonEncode([for (final p in savedPlayers) p.toJson()]));
+    final t = tournament;
+    if (t != null) _write(_kTournament, jsonEncode(t.toJson()));
+    _write(_kStats, jsonEncode(stats.toJson()));
+    _write(_kWallet, jsonEncode(wallet.toJson()));
+    notifyListeners();
+  }
+
+  /// iOS: on a fresh install, bring back the iCloud backup if there is one.
+  Future<bool> restoreFromICloud({bool onlyIfFresh = false}) async {
+    if (!Native.isIOS || (onlyIfFresh && !freshInstall)) return false;
+    final raw = await Native.iCloudGet(_kICloud);
+    if (raw == null) return false;
+    try {
+      restoreSnapshot((jsonDecode(raw) as Map).cast());
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Timer? _backupTimer;
+
+  /// iOS: keeps the iCloud copy current (a few seconds after each change).
+  void _scheduleICloudBackup() {
+    if (!Native.isIOS) return;
+    _backupTimer?.cancel();
+    _backupTimer = Timer(const Duration(seconds: 3), () => Native.iCloudSet(_kICloud, jsonEncode(snapshot())));
   }
 
   void _write(String key, String value) {
     _prefs?.setString(key, value).catchError((_) => false);
+    _scheduleICloudBackup();
   }
 }
 

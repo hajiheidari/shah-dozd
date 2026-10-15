@@ -92,6 +92,35 @@ async function api(method, path, body) {
   return text ? JSON.parse(text) : null;
 }
 
+/**
+ * Game Center and iCloud (key-value storage) must be on for the App ID
+ * before the profile is made, or the profile lacks their entitlements
+ * (ios/Runner/Runner.entitlements) and the archive is rejected.
+ */
+async function ensureCapabilities(bundleIdId) {
+  const have = await api('GET', `/v1/bundleIds/${bundleIdId}/bundleIdCapabilities`);
+  const types = new Set(have.data.map((c) => c.attributes.capabilityType));
+  const wanted = [
+    { capabilityType: 'GAME_CENTER' },
+    { capabilityType: 'ICLOUD', settings: [{ key: 'ICLOUD_VERSION', options: [{ key: 'XCODE_6' }] }] },
+  ];
+  for (const attributes of wanted) {
+    if (types.has(attributes.capabilityType)) continue;
+    try {
+      await api('POST', '/v1/bundleIdCapabilities', {
+        data: {
+          type: 'bundleIdCapabilities',
+          attributes,
+          relationships: { bundleId: { data: { type: 'bundleIds', id: bundleIdId } } },
+        },
+      });
+      console.error(`enabled ${attributes.capabilityType} for ${BUNDLE_ID}`);
+    } catch (e) {
+      console.error(`capability ${attributes.capabilityType}: ${e.message}`);
+    }
+  }
+}
+
 async function appBundle() {
   const ids = await api('GET', `/v1/bundleIds?filter[identifier]=${BUNDLE_ID}&limit=20`);
   let bundle = ids.data.find((b) => b.attributes.identifier === BUNDLE_ID);
@@ -205,7 +234,9 @@ async function newCert(csrFile, keyFile, outDir) {
 /** The app's App Store profile for the kept certificate, reused while valid. */
 async function profile(certId, outDir) {
   const bundle = await appBundle();
-  const profileName = 'Shah Dozd App Store (CI)';
+  await ensureCapabilities(bundle.id);
+  // v2: made after Game Center and iCloud were enabled (new entitlements).
+  const profileName = 'Shah Dozd App Store (CI) v2';
   const found = await api('GET', `/v1/profiles?filter[name]=${encodeURIComponent(profileName)}&include=certificates&limit=20`);
   const use0 = found.data.find((p) =>
     p.attributes.profileState === 'ACTIVE' &&

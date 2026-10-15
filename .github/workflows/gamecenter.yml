@@ -1,0 +1,32 @@
+# Sets up Game Center in App Store Connect: the "rounds played" leaderboard
+# and the achievements of ios/gamecenter/gamecenter.json (images next to it).
+# Runs by hand (Actions → Game Center → Run workflow) and when those files
+# change on main; it only creates what is missing.
+name: Game Center
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ios/gamecenter/**
+      - tools/gamecenter_setup.mjs
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Create the leaderboard and achievements
+        env:
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+          IOS_BUNDLE_ID: com.espadna.shahdozd
+        run: node tools/gamecenter_setup.mjs

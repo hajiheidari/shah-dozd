@@ -36,21 +36,24 @@ void main() {
   });
 
   test('buying needs enough coins, happens once, and equips only backs and themes', () {
-    final w = Wallet(coins: 160);
-    expect(w.buy('back.paisley'), isFalse, reason: 'costs 250');
+    final w = Wallet(coins: 610);
+    expect(w.buy('back.paisley'), isFalse, reason: 'costs 900');
     expect(w.buy('back.emerald'), isTrue);
     expect(w.coins, 10);
     expect(w.buy('back.emerald'), isFalse, reason: 'already owned');
     expect(w.equip('back.emerald'), isTrue);
     expect(w.back, 'back.emerald');
     expect(w.equip('theme.jade'), isFalse, reason: 'not owned');
-    w.coins = 1000;
+    w.coins = 10000;
     expect(w.buy('pack.fiery'), isTrue);
     expect(w.equip('pack.fiery'), isFalse);
+    expect(w.buy('deck.qajar'), isTrue);
+    expect(w.equip('deck.qajar'), isTrue);
+    expect(w.isEquipped('deck.qajar'), isTrue);
   });
 
   test('JSON round trip; unknown or unowned ids are ignored', () {
-    final w = Wallet(coins: 500)..buy('theme.silver');
+    final w = Wallet(coins: 5000)..buy('theme.silver');
     w.equip('theme.silver');
     final back = Wallet.fromJson(w.toJson());
     expect(back.toJson(), w.toJson());
@@ -81,15 +84,16 @@ void main() {
     expect(backAsset('back.classic'), 'assets/cards/back.webp');
     expect(backAsset('back.ruby'), 'assets/cards/backs/ruby.webp');
     expect(faceAsset('theme.gold', 'king'), 'assets/cards/king.webp');
-    expect(faceAsset('theme.jade', 'king'), 'assets/cards/jade/king.webp');
+    expect(faceAsset('theme.khatam', 'king'), 'assets/cards/khatam/king.webp');
+    expect(faceAsset('theme.khatam', 'king', deckId: 'deck.qajar'), 'assets/cards/decks/qajar/king.webp');
     const roles = ['king', 'minister', 'thief', 'thief2', 'executioner', 'sipahi', 'joker'];
     for (final i in shopItems) {
       if (i.kind == ItemKind.back) expect(File(backAsset(i.id)).existsSync(), isTrue, reason: i.id);
-      if (i.kind == ItemKind.theme) {
-        for (final r in roles) {
-          expect(File(faceAsset(i.id, r)).existsSync(), isTrue, reason: '${i.id} $r');
-        }
+      for (final r in roles) {
+        if (i.kind == ItemKind.theme) expect(File(faceAsset(i.id, r)).existsSync(), isTrue, reason: '${i.id} $r');
+        if (i.kind == ItemKind.deck) expect(File(faceAsset('theme.gold', r, deckId: i.id)).existsSync(), isTrue, reason: '${i.id} $r');
       }
     }
   });
 }
+

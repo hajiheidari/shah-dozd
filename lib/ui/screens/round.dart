@@ -143,6 +143,7 @@ class _RoundScreenState extends State<RoundScreen> with WidgetsBindingObserver {
     final app = AppScope.read(context);
     final o = t.play(deal, List.of(picks));
     app.saveTournament();
+    app.recordRound(t.mode, o, tournamentFinished: t.isFinished);
     setState(() {
       outcome = o;
       phase = _Phase.result;

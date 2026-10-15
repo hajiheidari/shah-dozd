@@ -58,5 +58,13 @@ const icon = join(root, 'assets/icon/icon.png');
 const sizes = { 'web/icons/Icon-192.png': 192, 'web/icons/Icon-512.png': 512, 'web/icons/Icon-maskable-192.png': 192,
   'web/icons/Icon-maskable-512.png': 512, 'web/favicon.png': 64 };
 for (const [out, s] of Object.entries(sizes)) execFileSync('convert', [icon, '-resize', `${s}x${s}`, join(root, out)]);
+// Game Center achievement images (1024×1024, opaque) → ios/gamecenter/<key>.png
+const ACH = { first_round: 'king', rounds_50: 'minister', rounds_200: 'sipahi', champion: 'decks/engraving/king',
+  all_modes: 'back', perfect_catch: 'thief2', joker_trick: 'joker', collector: 'backs/sun', deck_owner: 'decks/qajar/king' };
+for (const [key, card] of Object.entries(ACH)) {
+  execFileSync('convert', ['-size', '1024x1024', 'radial-gradient:#2A2466-#0C0F2A',
+    '(', join(root, 'assets/cards', card + '.webp'), '-resize', 'x840', ')', '-gravity', 'center', '-composite',
+    '-alpha', 'off', '-depth', '8', join(root, 'ios/gamecenter', key + '.png')]);
+}
 rmSync(tmp, { recursive: true, force: true });
 console.log('rendered');

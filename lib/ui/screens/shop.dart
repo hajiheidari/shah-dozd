@@ -119,6 +119,16 @@ class _ShopScreenState extends State<ShopScreen> {
           Expanded(
             child: ListView(children: [
               Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(color: const Color(0xFF16352B), borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0x669FE0B8))),
+                child: Row(children: [
+                  const Icon(Icons.volunteer_activism_outlined, color: C.success, size: 22),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(s.t('shop.noMoney'), style: const TextStyle(fontSize: 13.5, height: 1.6, color: Color(0xFFDDF5E6)))),
+                ]),
+              ),
+              Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(Space.radiusL), border: Border.all(color: C.line)),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -154,9 +164,19 @@ class _ShopScreenState extends State<ShopScreen> {
                   _ItemTile(item: i, wallet: w, preview: CardArt(back: i.id, width: 92), onTap: () => _tap(i)),
               ]),
               title(s.t('shop.themes')),
+              if (w.deck != 'deck.classic')
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(s.t('shop.deckNote'), style: const TextStyle(fontSize: 12.5, color: C.faint)),
+                ),
               _Grid(children: [
                 for (final i in shopItems.where((i) => i.kind == ItemKind.theme))
                   _ItemTile(item: i, wallet: w, preview: CardArt(role: Role.king, theme: i.id, width: 92), onTap: () => _tap(i)),
+              ]),
+              title(s.t('shop.decks')),
+              _Grid(children: [
+                for (final i in shopItems.where((i) => i.kind == ItemKind.deck))
+                  _ItemTile(item: i, wallet: w, preview: CardArt(role: Role.joker, deck: i.id, width: 92), onTap: () => _tap(i)),
               ]),
               title(s.t('shop.packs')),
               for (final i in shopItems.where((i) => i.kind == ItemKind.pack))

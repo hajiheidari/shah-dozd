@@ -1,0 +1,20 @@
+{
+  "_comment": "Game Center leaderboard and achievements. Single source for tools/gamecenter_setup.mjs (App Store Connect) and lib/app/stats.dart (checked by test/shop/recovery_test.dart). Images: ios/gamecenter/<key>.png (tools/render_art.mjs).",
+  "leaderboard": {
+    "id": "shahdozd.rounds",
+    "ref": "Rounds played",
+    "en-US": "Most rounds played",
+    "hi": "सबसे ज़्यादा राउंड खेले"
+  },
+  "achievements": [
+    {"key": "first_round", "id": "shahdozd.first_round", "points": 10, "en-US": ["First round", "Play your first round."], "hi": ["पहला राउंड", "अपना पहला राउंड खेलें।"]},
+    {"key": "rounds_50", "id": "shahdozd.rounds_50", "points": 30, "en-US": ["Regular at court", "Play 50 rounds."], "hi": ["दरबार के नियमित", "50 राउंड खेलें।"]},
+    {"key": "rounds_200", "id": "shahdozd.rounds_200", "points": 60, "en-US": ["Grand vizier", "Play 200 rounds."], "hi": ["महा वज़ीर", "200 राउंड खेलें।"]},
+    {"key": "champion", "id": "shahdozd.champion", "points": 20, "en-US": ["Crowned", "Finish a tournament."], "hi": ["ताजपोशी", "एक टूर्नामेंट पूरा करें।"]},
+    {"key": "all_modes", "id": "shahdozd.all_modes", "points": 40, "en-US": ["Every court", "Play all four modes."], "hi": ["हर दरबार", "चारों मोड खेलें।"]},
+    {"key": "perfect_catch", "id": "shahdozd.perfect_catch", "points": 30, "en-US": ["Perfect Catch", "Catch both thieves in one round."], "hi": ["परफ़ेक्ट कैच", "एक राउंड में दोनों चोर पकड़ें।"]},
+    {"key": "joker_trick", "id": "shahdozd.joker_trick", "points": 20, "en-US": ["The Joker’s trick", "See the Joker fool the Minister."], "hi": ["जोकर की चाल", "जोकर को मंत्री को चकमा देते देखें।"]},
+    {"key": "collector", "id": "shahdozd.collector", "points": 20, "en-US": ["Collector", "Buy your first item in the shop."], "hi": ["संग्रहकर्ता", "दुकान से पहली चीज़ ख़रीदें।"]},
+    {"key": "deck_owner", "id": "shahdozd.deck_owner", "points": 50, "en-US": ["Royal deck", "Own a whole deck."], "hi": ["शाही गड्डी", "एक पूरी गड्डी के मालिक बनें।"]}
+  ]
+}

@@ -1,4 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../../app/native.dart';
 
 import '../../app/state.dart';
 import '../../engine/engine.dart';
@@ -106,6 +110,48 @@ class SettingsScreen extends StatelessWidget {
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RulesScreen())),
                 ),
               ]),
+              section(s.t('backup.title'), [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 4),
+                  child: Text(
+                    s.t(Native.isIOS ? 'backup.icloud' : (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) ? 'backup.android' : 'backup.web'),
+                    style: const TextStyle(fontSize: 13, height: 1.7, color: C.muted),
+                  ),
+                ),
+                if (Native.isIOS)
+                  ListTile(
+                    key: const Key('icloudRestore'),
+                    leading: const Icon(Icons.cloud_download_outlined, color: C.goldText),
+                    title: Text(s.t('backup.icloud.restore')),
+                    onTap: () async {
+                      final ok = await app.restoreFromICloud();
+                      if (context.mounted) _toast(context, s.t(ok ? 'backup.ok' : 'backup.none'));
+                    },
+                  ),
+                ListTile(
+                  key: const Key('showCode'),
+                  leading: const Icon(Icons.key_rounded, color: C.goldText),
+                  title: Text(s.t('backup.code')),
+                  onTap: () => _showCode(context, app),
+                ),
+                ListTile(
+                  key: const Key('enterCode'),
+                  leading: const Icon(Icons.restore_rounded, color: C.goldText),
+                  title: Text(s.t('backup.enter')),
+                  onTap: () => _enterCode(context, app),
+                ),
+              ]),
+              if (Native.isIOS)
+                section(s.t('gc.title'), [
+                  ListTile(
+                    leading: const Icon(Icons.emoji_events_outlined, color: C.goldText),
+                    title: Text(s.t(Native.gameCenterSignedIn ? 'gc.open' : 'gc.signin')),
+                    onTap: () async {
+                      if (!Native.gameCenterSignedIn) await Native.gameCenterSignIn();
+                      if (Native.gameCenterSignedIn) await Native.gameCenterDashboard();
+                    },
+                  ),
+                ]),
               section(s.t('settings.premium'), [
                 Padding(padding: const EdgeInsets.all(14), child: Text(s.t('settings.premium.sub'), style: const TextStyle(fontSize: 14, height: 1.7, color: C.muted))),
               ]),
@@ -118,4 +164,84 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void _toast(BuildContext context, String text) =>
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text), duration: const Duration(seconds: 2)));
+
+Future<void> _showCode(BuildContext context, AppState app) {
+  final s = S.of(context);
+  final code = app.recoveryCode();
+  return showDialog<void>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: C.surface,
+      title: Text(s.t('backup.code')),
+      content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+          decoration: BoxDecoration(color: C.night, borderRadius: BorderRadius.circular(12), border: Border.all(color: C.lineSoft)),
+          child: SelectableText(
+            code,
+            key: const Key('recoveryCode'),
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.ltr,
+            style: const TextStyle(fontFamily: 'monospace', fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: 1.5, color: C.goldText),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(s.t('backup.code.note'), style: const TextStyle(fontSize: 13, height: 1.7, color: C.muted)),
+      ]),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            await Clipboard.setData(ClipboardData(text: code));
+            if (ctx.mounted) _toast(ctx, s.t('backup.copied'));
+          },
+          child: Text(s.t('backup.copy')),
+        ),
+        TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(MaterialLocalizations.of(ctx).okButtonLabel)),
+      ],
+    ),
+  );
+}
+
+Future<void> _enterCode(BuildContext context, AppState app) async {
+  final s = S.of(context);
+  final controller = TextEditingController();
+  String? error;
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setState) => AlertDialog(
+        backgroundColor: C.surface,
+        title: Text(s.t('backup.enter')),
+        content: TextField(
+          key: const Key('codeField'),
+          controller: controller,
+          autofocus: true,
+          textDirection: TextDirection.ltr,
+          textCapitalization: TextCapitalization.characters,
+          style: const TextStyle(fontFamily: 'monospace', letterSpacing: 1.2),
+          decoration: InputDecoration(hintText: 'XXXX-XXXX-XXXX', errorText: error, hintTextDirection: TextDirection.ltr),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(s.t('backup.cancel'))),
+          FilledButton(
+            key: const Key('restoreCode'),
+            onPressed: () {
+              if (app.restoreCode(controller.text)) {
+                Navigator.of(ctx).pop(true);
+              } else {
+                setState(() => error = s.t('backup.bad'));
+              }
+            },
+            child: Text(s.t('backup.restore')),
+          ),
+        ],
+      ),
+    ),
+  );
+  controller.dispose();
+  if (ok == true && context.mounted) _toast(context, s.t('backup.ok'));
 }

@@ -49,8 +49,13 @@ Updated 2026-10-15.
 * No background music/ambience (only sound effects). Optional for later.
 * Coins shop (2026-10-15): card backs, card frames, penalty packs; coins from
   sharing and rewarded ads (docs/MONETIZATION.md). AdMob runs on Google's
-  test ids and Adivery is off until the real ids are set. Coins live on the
-  device only; a share cannot be verified as an install (daily caps only).
+  test ids and Adivery is off until the real ids are set. A share cannot be
+  verified as an install, so it pays little (15 coins, 2 a day).
+* Round 3 (2026-10-15): rebalanced prices, card styles (Tile, Khatam-kari,
+  Miniature) and whole decks (Qajar, Shadow Play, Gold Engraving), welcome
+  popup, no-scroll home, RTL stepper, Game Center (leaderboard + 9
+  achievements), iCloud / Android Auto Backup, offline recovery code. The
+  Game Center items need `.github/workflows/gamecenter.yml` to succeed once.
 * No money purchases: `lib/premium/` keeps the store-independent interface.
 * The iOS home-screen name is "Shah Dozd Vazir" in every language
   (Android has localized names). Localized `InfoPlist.strings` need Xcode.

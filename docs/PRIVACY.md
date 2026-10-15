@@ -12,6 +12,13 @@ store release.
    scores and round history, and your settings. They stay in the app's own
    storage (or the browser's local storage for the web version) and are
    removed when you clear the app's or the browser's data or uninstall it.
+   **Backups:** on iPhone and iPad the saved state (coins, items, names,
+   settings, scores) is also kept in your own iCloud; on Android the system
+   may back it up to your own Google Drive if device backup is on. We cannot
+   read either. The recovery code in Settings contains only coins, items and
+   the number of rounds played, and never leaves your device unless you copy it.
+   **Game Center (iOS):** if you are signed in, the number of rounds played and
+   earned achievements are sent to Apple's Game Center under Apple's policy.
 3. **No analytics or trackers.** The web version downloads only the game's
    own files from shahdozd.espadna.com (or shahdozd.espadna.ir); the hosting
    provider may keep standard server logs (IP address, time, file).

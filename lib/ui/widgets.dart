@@ -141,7 +141,7 @@ class IconBox extends StatelessWidget {
 
 /// A card's art. [role] null = the card back.
 class CardArt extends StatelessWidget {
-  const CardArt({super.key, this.role, required this.width, this.glow, this.back, this.theme});
+  const CardArt({super.key, this.role, required this.width, this.glow, this.back, this.theme, this.deck});
   final Role? role;
   final double width;
   final Color? glow;
@@ -149,6 +149,7 @@ class CardArt extends StatelessWidget {
   /// Shop previews pass a back or theme id; otherwise the equipped one is used.
   final String? back;
   final String? theme;
+  final String? deck;
 
   static const ratio = 420 / 300;
 
@@ -157,7 +158,8 @@ class CardArt extends StatelessWidget {
     final wallet = context.dependOnInheritedWidgetOfExactType<AppScope>()?.notifier?.wallet;
     final asset = role == null
         ? backAsset(back ?? wallet?.back ?? 'back.classic')
-        : faceAsset(theme ?? wallet?.theme ?? 'theme.gold', role!.art);
+        : faceAsset(theme ?? wallet?.theme ?? 'theme.gold', role!.art,
+            deckId: deck ?? (theme != null ? 'deck.classic' : wallet?.deck ?? 'deck.classic'));
     return Container(
         width: width,
         height: width * ratio,

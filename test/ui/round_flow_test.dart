@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shah_dozd/app/app.dart';
 import 'package:shah_dozd/app/state.dart';
+import 'package:shah_dozd/shop/wallet.dart';
 import 'package:shah_dozd/engine/engine.dart';
 import 'package:shah_dozd/l10n/strings.dart';
 
@@ -23,7 +24,7 @@ Future<AppState> startGame(WidgetTester tester, ModeId mode, String modeTitle) a
   tester.view.physicalSize = const Size(1170, 2532);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
-  final state = AppState.memory(settings: const Settings(lang: Lang.en, sound: false, haptics: false, reduceMotion: true));
+  final state = AppState.memory(settings: const Settings(lang: Lang.en, sound: false, haptics: false, reduceMotion: true), wallet: Wallet(welcomed: true));
   await tester.pumpWidget(ShahDozdApp(state: state));
   await settle(tester);
   await tester.tap(find.text(modeTitle));

@@ -40,49 +40,136 @@ def neck(shade, w=34, top=246, h=56):
     return f'<rect x="{150-w/2}" y="{top}" width="{w}" height="{h}" rx="8" fill="{shade}"/>'
 
 
-# Frame themes sold in the shop (lib/shop/catalog.dart): metal gradient,
-# flat metal colour and the card's base colour. 'gold' is the default and is
-# written to the output root; the others go to <out>/<theme>/.
-THEMES = {
-    'gold': (('#F6E3A6', '#D4AE55', '#8A6424'), '#D4AE55', '#11142F'),
-    'silver': (('#FBFCFE', '#B9C2CF', '#646C7A'), '#B9C2CF', '#11141C'),
-    'rose': (('#FBE1D6', '#DB9A84', '#8A4B3C'), '#DB9A84', '#1A1020'),
-    'jade': (('#D4F2DF', '#5FB08A', '#22604A'), '#5FB08A', '#0A1A17'),
+# ---------- CARD STYLES ----------
+# A style decides everything around the character: card base and its
+# pattern, frame metal, the arch background, the light rays, and optionally a
+# treatment of the character itself (decks). Sold in the shop
+# (lib/shop/catalog.dart): 'gold' and deck 'classic' are free.
+#   themes → <out>/<name>/<role>.svg   ('gold' → <out>/<role>.svg)
+#   decks  → <out>/decks/<name>/<role>.svg
+
+KHATAM = ('<pattern id="basepat" width="16" height="16" patternUnits="userSpaceOnUse">'
+          '<rect width="16" height="16" fill="#3A2214"/>'
+          '<path d="M8 0L10 4L8 8L6 4Z M0 8L4 6L8 8L4 10Z M8 8L12 6L16 8L12 10Z M8 8L10 12L8 16L6 12Z" fill="#E9DCC0"/>'
+          '<path d="M8 3.2L9 4.5L8 5.8L7 4.5Z M8 10.2L9 11.5L8 12.8L7 11.5Z" fill="#2F7A55"/>'
+          '<circle cx="8" cy="8" r="1.3" fill="#C9A24A"/><circle cx="0" cy="0" r="1.6" fill="#C9A24A"/>'
+          '<circle cx="16" cy="0" r="1.6" fill="#C9A24A"/><circle cx="0" cy="16" r="1.6" fill="#C9A24A"/><circle cx="16" cy="16" r="1.6" fill="#C9A24A"/>'
+          '</pattern>')
+TILE = ('<pattern id="basepat" width="28" height="28" patternUnits="userSpaceOnUse">'
+        '<rect width="28" height="28" fill="#0F6F7C"/>'
+        '<path d="M14 3L17 10L24 7L21 14L24 21L17 18L14 25L11 18L4 21L7 14L4 7L11 10Z" fill="#F4F1E6"/>'
+        '<path d="M14 8L16 12L20 14L16 16L14 20L12 16L8 14L12 12Z" fill="#1D4FA8"/>'
+        '<circle cx="14" cy="14" r="1.6" fill="#E3B341"/>'
+        '<path d="M0 0L3 3M28 0L25 3M0 28L3 25M28 28L25 25" stroke="#F4F1E6" stroke-width="1.4"/></pattern>')
+MINIATURE = ('<pattern id="basepat" width="30" height="30" patternUnits="userSpaceOnUse">'
+             '<rect width="30" height="30" fill="#EFE2C2"/>'
+             '<path d="M15 4C19 9 19 13 15 15C11 13 11 9 15 4Z M15 26C11 21 11 17 15 15C19 17 19 21 15 26Z" fill="#C79A3A" fill-opacity=".85"/>'
+             '<path d="M4 15C9 11 13 11 15 15C13 19 9 19 4 15Z M26 15C21 19 17 19 15 15C17 11 21 11 26 15Z" fill="#2F5FA8" fill-opacity=".8"/>'
+             '<circle cx="15" cy="15" r="2" fill="#B3243A"/>'
+             '<circle cx="0" cy="0" r="2.2" fill="#2E8B6A"/><circle cx="30" cy="0" r="2.2" fill="#2E8B6A"/>'
+             '<circle cx="0" cy="30" r="2.2" fill="#2E8B6A"/><circle cx="30" cy="30" r="2.2" fill="#2E8B6A"/></pattern>')
+SILVER = ('<pattern id="basepat" width="22" height="22" patternUnits="userSpaceOnUse">'
+          '<rect width="22" height="22" fill="#14161F"/>'
+          '<path d="M0 11C5.5 5 5.5 17 11 11S16.5 5 22 11" fill="none" stroke="#B9C2CF" stroke-opacity=".35" stroke-width="1"/>'
+          '<circle cx="11" cy="11" r="1.2" fill="#DDE3EC" fill-opacity=".55"/></pattern>')
+PAPER = ('<pattern id="basepat" width="40" height="40" patternUnits="userSpaceOnUse">'
+         '<rect width="40" height="40" fill="#E8DABA"/>'
+         '<path d="M0 20H40M20 0V40" stroke="#B89A66" stroke-opacity=".12" stroke-width="1"/></pattern>')
+LACQUER = ('<pattern id="basepat" width="26" height="26" patternUnits="userSpaceOnUse">'
+           '<rect width="26" height="26" fill="#0E0B14"/>'
+           '<path d="M13 3C17 8 17 11 13 13C9 11 9 8 13 3Z" fill="none" stroke="#C9A24A" stroke-opacity=".4" stroke-width=".9"/></pattern>')
+LANTERN = ('<pattern id="basepat" width="20" height="20" patternUnits="userSpaceOnUse">'
+           '<rect width="20" height="20" fill="#1F120A"/>'
+           '<path d="M0 10H20" stroke="#5A3418" stroke-opacity=".5" stroke-width="2"/></pattern>')
+
+GOLD_M = ('#F6E3A6', '#D4AE55', '#8A6424')
+STYLES = {
+    # name: kind, base pattern, metal stops, flat line colour, arch (in,out) or None, ray (colour, opacity), fade colour, css/filter
+    'gold': dict(kind='theme', pat='', base='#11142F', metal=GOLD_M, flat='#D4AE55', arch=None, ray=None, fade='#11142F'),
+    'silver': dict(kind='theme', pat=SILVER, base='#14161F', metal=('#FBFCFE', '#B9C2CF', '#646C7A'), flat='#C7CFDA',
+                   arch=None, ray=('#E6ECF5', '.08'), fade='#14161F'),
+    'tile': dict(kind='theme', pat=TILE, base='#0F6F7C', metal=('#FFFFFF', '#E6E1D0', '#9C9480'), flat='#F4F1E6',
+                 arch=('#2D63C2', '#0B1F4D'), ray=('#FFFFFF', '.09'), fade='#0B1F4D'),
+    'khatam': dict(kind='theme', pat=KHATAM, base='#3A2214', metal=('#F3D9A0', '#B88A3E', '#6E4A1C'), flat='#E9DCC0',
+                   arch=('#8A5A33', '#2B160A'), ray=('#F3D9A0', '.10'), fade='#2B160A'),
+    'miniature': dict(kind='theme', pat=MINIATURE, base='#EFE2C2', metal=('#F6E3A6', '#C79A3A', '#7E5A1E'), flat='#2F5FA8',
+                      arch=('#4AA3C8', '#123E73'), ray=('#F6E3A6', '.16'), fade='#123E73'),
+    # Decks: the character itself changes.
+    'qajar': dict(kind='deck', pat=PAPER, base='#E8DABA', metal=('#E7CFA0', '#9C7442', '#4E3418'), flat='#7A5A35',
+                  arch=('#D8C3A0', '#6E5436'), ray=('#FFFFFF', '.05'), fade='#4E3A24', treat='qajar'),
+    'shadow': dict(kind='deck', pat=LANTERN, base='#1F120A', metal=('#E3B26A', '#9E5E22', '#4A260C'), flat='#C9873E',
+                   arch=('#FFD58A', '#B8461A'), ray=('#FFF2C9', '.12'), fade='#7A2A0E', treat='shadow'),
+    'engraving': dict(kind='deck', pat=LACQUER, base='#0E0B14', metal=GOLD_M, flat='#D4AE55',
+                      arch=('#2A2440', '#07060C'), ray=('#D4AE55', '.07'), fade='#07060C', treat='engraving'),
+}
+
+TREATMENTS = {
+    'qajar': ('<filter id="treat" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">'
+              '<feColorMatrix type="matrix" values=".393 .769 .189 0 0 .349 .686 .168 0 0 .272 .534 .131 0 0 0 0 0 1 0"/>'
+              '<feComponentTransfer><feFuncR type="linear" slope="1.08" intercept="-.02"/><feFuncG type="linear" slope="1.05" intercept="-.02"/>'
+              '<feFuncB type="linear" slope=".95" intercept="-.02"/></feComponentTransfer></filter>'
+              '<filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4"/>'
+              '<feColorMatrix type="matrix" values="0 0 0 0 .25 0 0 0 0 .18 0 0 0 0 .1 0 0 0 .55 0"/></filter>'
+              '<radialGradient id="vig" cx=".5" cy=".5" r=".6"><stop offset=".55" stop-color="#2A1A0A" stop-opacity="0"/>'
+              '<stop offset="1" stop-color="#2A1A0A" stop-opacity=".75"/></radialGradient>', ''),
+    'shadow': ('', '<style>.treat *{fill:#1A0E08!important;stroke:#1A0E08!important}.treat [fill="none"]{fill:none!important}</style>'),
+    'engraving': ('', '<style>.treat *{fill:#16121F!important;stroke:#E2C277!important;stroke-width:1.3px!important}'
+                      '.treat [fill="none"]{fill:none!important}</style>'),
 }
 
 CARD_TEMPLATE = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" width="600" height="840">
-<defs>§GOLD_DEFS§
+<defs>§GOLD_DEFS§§PAT§§TREAT_DEFS§
 <linearGradient id="frm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="§M0§"/><stop offset=".45" stop-color="§M1§"/><stop offset="1" stop-color="§M2§"/></linearGradient>
 <radialGradient id="bg" cx=".5" cy=".46" r=".62"><stop offset="0" stop-color="§BG_IN§"/><stop offset="1" stop-color="§BG_OUT§"/></radialGradient>
 <clipPath id="arch"><path d="§ARCH§"/></clipPath>
-<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="§BASE§" stop-opacity="0"/><stop offset="1" stop-color="§BASE§" stop-opacity=".55"/></linearGradient>§EXTRA_DEFS§
-</defs>
+<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="§FADE§" stop-opacity="0"/><stop offset="1" stop-color="§FADE§" stop-opacity=".55"/></linearGradient>§EXTRA_DEFS§
+</defs>§STYLE§
 <rect x="3" y="3" width="294" height="414" rx="22" fill="§BASE§"/>
+<rect x="3" y="3" width="294" height="414" rx="22" fill="§BASEFILL§"/>
 <rect x="3" y="3" width="294" height="414" rx="22" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="2"/>
-<rect x="12" y="12" width="276" height="396" rx="15" fill="none" stroke="url(#frm)" stroke-width="2.2"/>
-<rect x="19" y="19" width="262" height="382" rx="10" fill="none" stroke="§FLAT§" stroke-opacity=".3" stroke-width="1"/>
-<g clip-path="url(#arch)">
+<rect x="12" y="12" width="276" height="396" rx="15" fill="none" stroke="url(#frm)" stroke-width="2.6"/>
+<rect x="19" y="19" width="262" height="382" rx="10" fill="none" stroke="§FLAT§" stroke-opacity=".45" stroke-width="1"/>
+<path d="M36 404V184C36 124 96 98 150 52C204 98 264 124 264 184V404Z" fill="§BASE§" fill-opacity=".55"/>
+<g clip-path="url(#arch)"§GROUP_FILTER§>
 <rect width="300" height="420" fill="url(#bg)"/>
 <circle cx="150" cy="214" r="170" fill="none" stroke="§RAY§" stroke-opacity="§RAY_OP§" stroke-width="340" stroke-dasharray="26.7 26.7"/>
 <circle cx="150" cy="214" r="96" fill="#fff" opacity=".05"/>
-§BODY§
+<g class="treat">§BODY§</g>
 <rect y="330" width="300" height="90" fill="url(#fade)"/>
-</g>
-<path d="§ARCH§" fill="none" stroke="url(#frm)" stroke-width="3"/>
-<path d="M30 404V184C30 120 92 92 150 46C208 92 270 120 270 184V404" fill="none" stroke="§FLAT§" stroke-opacity=".45" stroke-width="1"/>
+</g>§OVERLAY§
+<path d="§ARCH§" fill="none" stroke="url(#frm)" stroke-width="3.2"/>
+<path d="M30 404V184C30 120 92 92 150 46C208 92 270 120 270 184V404" fill="none" stroke="§FLAT§" stroke-opacity=".6" stroke-width="1.2"/>
 <path d="M150 34l6 8-6 8-6-8z" fill="url(#frm)"/>
 <g fill="url(#frm)"><path d="M30 30l5 5-5 5-5-5z"/><path d="M270 30l5 5-5 5-5-5z"/><path d="M30 380l5 5-5 5-5-5z"/><path d="M270 380l5 5-5 5-5-5z"/></g>
 </svg>'''
 
 
 def card(name, bg_in, bg_out, body, extra_defs='', ray='#FFFFFF', ray_op='.06'):
-    for theme, ((m0, m1, m2), flat, base) in THEMES.items():
+    for style, st in STYLES.items():
+        arch_in, arch_out = st['arch'] or (bg_in, bg_out)
+        r_col, r_op = st['ray'] or (ray, ray_op)
+        treat = st.get('treat')
+        tdefs, tstyle = TREATMENTS.get(treat, ('', ''))
+        overlay = ''
+        group_filter = ''
+        if treat == 'qajar':
+            group_filter = ' filter="url(#treat)"'
+            overlay = ('<g clip-path="url(#arch)"><rect width="300" height="420" fill="url(#vig)"/>'
+                       '<rect width="300" height="420" filter="url(#grain)" opacity=".35"/></g>')
+        values = [('GOLD_DEFS', GOLD_DEFS), ('PAT', st['pat']), ('TREAT_DEFS', tdefs), ('EXTRA_DEFS', extra_defs),
+                  ('STYLE', tstyle), ('GROUP_FILTER', group_filter), ('OVERLAY', overlay), ('ARCH', ARCH),
+                  ('BG_IN', arch_in), ('BG_OUT', arch_out), ('BASEFILL', 'url(#basepat)' if st['pat'] else st['base']),
+                  ('BASE', st['base']), ('FLAT', st['flat']), ('FADE', st['fade']), ('RAY_OP', r_op), ('RAY', r_col),
+                  ('M0', st['metal'][0]), ('M1', st['metal'][1]), ('M2', st['metal'][2]), ('BODY', body)]
         svg = CARD_TEMPLATE
-        for k, v in [('GOLD_DEFS', GOLD_DEFS), ('EXTRA_DEFS', extra_defs), ('ARCH', ARCH),
-                     ('BG_IN', bg_in), ('BG_OUT', bg_out), ('BASE', base), ('FLAT', flat), ('RAY_OP', ray_op),
-                     ('RAY', ray), ('M0', m0), ('M1', m1), ('M2', m2), ('BODY', body)]:
+        for k, v in values:
             svg = svg.replace('§' + k + '§', v)
-        folder = OUT if theme == 'gold' else OUT / theme
+        if style == 'gold':
+            folder = OUT
+        elif st['kind'] == 'deck':
+            folder = OUT / 'decks' / style
+        else:
+            folder = OUT / style
         folder.mkdir(parents=True, exist_ok=True)
         (folder / f'{name}.svg').write_text(svg)
 

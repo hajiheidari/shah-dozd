@@ -27,8 +27,47 @@ const _looks = [
   _ModeLook(ModeId.twoThieves, Role.thief, Role.joker, Role.thief2, Color(0xFF1A2448)),
 ];
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _welcome());
+  }
+
+  /// First launch: tell the player about the gift coins and the shop.
+  Future<void> _welcome() async {
+    if (!mounted) return;
+    final app = AppScope.read(context);
+    if (app.wallet.welcomed) return;
+    app.wallet.welcomed = true;
+    app.saveWallet();
+    final s = S.of(context);
+    final go = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: const Center(child: CoinIcon(size: 56)),
+        title: Text(s.t('welcome.title'), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 22)),
+        content: Text(s.t('welcome.body', {'n': app.wallet.coins}), textAlign: TextAlign.center, style: const TextStyle(height: 1.8, color: C.muted)),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(s.t('welcome.later'), style: const TextStyle(color: C.muted))),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: C.gold, foregroundColor: C.onGold, minimumSize: const Size(48, 48)),
+            child: Text(s.t('welcome.go'), style: const TextStyle(fontWeight: FontWeight.w800)),
+          ),
+        ],
+      ),
+    );
+    if (go == true && mounted) _push(context, const ShopScreen());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,62 +77,59 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: LayoutBuilder(builder: (context, box) {
         final wide = box.maxWidth >= 820;
+        // Everything fits on one screen: the mode cards take the room left.
+        final compact = box.maxHeight < 700;
+        final cards = [for (final l in _looks) Expanded(child: _ModeCard(look: l))];
+        Widget gap() => const SizedBox(width: 12, height: 12);
         return Body(
           maxWidth: wide ? 1080 : 560,
-          child: CustomScrollView(slivers: [
-            if (wide && box.maxHeight > 760) SliverToBoxAdapter(child: SizedBox(height: ((box.maxHeight - 700) / 3).clamp(0, 160))),
-            SliverToBoxAdapter(
-              child: Row(children: [
-                IconBox(icon: Icons.groups_2_outlined, label: s.t('home.players'), onPressed: () => _push(context, const SavedPlayersScreen())),
-                Expanded(child: Center(child: CoinPill(coins: app.wallet.coins, label: s.t('home.shop'), onTap: () => _push(context, const ShopScreen())))),
-                IconBox(icon: Icons.settings_outlined, label: s.t('home.settings'), onPressed: () => _push(context, const SettingsScreen())),
-              ]),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 14, bottom: 18),
-                child: Column(children: [
-                  const CrownMark(),
-                  const SizedBox(height: 4),
-                  Text(s.t('app.title'), textAlign: TextAlign.center, style: F.title(s.lang, wide ? 46 : 38)),
+          child: Column(children: [
+            Row(children: [
+              IconBox(icon: Icons.groups_2_outlined, label: s.t('home.players'), onPressed: () => _push(context, const SavedPlayersScreen())),
+              Expanded(child: Center(child: CoinPill(coins: app.wallet.coins, label: s.t('home.shop'), onTap: () => _push(context, const ShopScreen())))),
+              IconBox(icon: Icons.settings_outlined, label: s.t('home.settings'), onPressed: () => _push(context, const SettingsScreen())),
+            ]),
+            Padding(
+              padding: EdgeInsets.only(top: compact ? 6 : 12, bottom: compact ? 8 : 14),
+              child: Column(children: [
+                CrownMark(width: compact ? 44 : 64),
+                const SizedBox(height: 2),
+                Text(s.t('app.title'), textAlign: TextAlign.center, maxLines: 2, style: F.title(s.lang, wide ? 46 : (compact ? 30 : 38))),
+                if (!compact) ...[
                   const SizedBox(height: 2),
                   Text(s.t('home.pick'), style: const TextStyle(fontSize: 14, color: C.muted)),
-                ]),
-              ),
+                ],
+              ]),
             ),
-            SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: wide ? 4 : 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                mainAxisExtent: wide ? 300 : (box.maxWidth < 360 ? 236 : 252),
-              ),
-              delegate: SliverChildListDelegate([for (final l in _looks) _ModeCard(look: l)]),
+            Expanded(
+              child: wide
+                  ? Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [cards[0], gap(), cards[1], gap(), cards[2], gap(), cards[3]])
+                  : Column(children: [
+                      Expanded(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [cards[0], gap(), cards[1]])),
+                      gap(),
+                      Expanded(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [cards[2], gap(), cards[3]])),
+                    ]),
             ),
             if (t != null)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: GoldButton(
-                    label: s.t('home.continue'),
-                    sub: s.t('home.continue.sub', {'mode': s.mode(t.mode), 'r': t.isFinished ? t.rounds.length : t.roundNumber, 'n': t.players.length}),
-                    icon: Icons.play_arrow_rounded,
-                    onPressed: () => _push(context, t.isFinished ? const ScoreboardScreen() : const RoundScreen()),
-                  ),
+              Padding(
+                padding: EdgeInsets.only(top: compact ? 8 : 12),
+                child: GoldButton(
+                  label: s.t('home.continue'),
+                  sub: compact ? null : s.t('home.continue.sub', {'mode': s.mode(t.mode), 'r': t.isFinished ? t.rounds.length : t.roundNumber, 'n': t.players.length}),
+                  icon: Icons.play_arrow_rounded,
+                  onPressed: () => _push(context, t.isFinished ? const ScoreboardScreen() : const RoundScreen()),
                 ),
               ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 14, bottom: 8),
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 6,
-                  children: [
-                    _Link(s.t('home.rules'), () => _push(context, const RulesScreen())),
-                    if (t != null) _Link(s.t('board.title'), () => _push(context, const ScoreboardScreen())),
-                    _Link('فارسی · English · हिन्दी', () => pickLanguage(context)),
-                  ],
-                ),
+            Padding(
+              padding: EdgeInsets.only(top: compact ? 2 : 8),
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 6,
+                children: [
+                  _Link(s.t('home.rules'), () => _push(context, const RulesScreen())),
+                  if (t != null) _Link(s.t('board.title'), () => _push(context, const ScoreboardScreen())),
+                  _Link('فارسی · English · हिन्दी', () => pickLanguage(context)),
+                ],
               ),
             ),
           ]),

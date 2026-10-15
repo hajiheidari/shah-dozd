@@ -101,6 +101,13 @@ GitHub Mac and uploads to TestFlight. It runs by hand (Actions → "iOS
 read the team's kept signing certificate, see `tools/ios_signing.mjs`). The app
 record must exist in App Store Connect with bundle id `com.espadna.shahdozd`
 (Apple's API cannot create it). Build number = the workflow run number.
+The signing profile includes the Game Center and iCloud (key-value storage)
+capabilities (`Runner/Runner.entitlements`).
+
+**Game Center:** `.github/workflows/gamecenter.yml` creates the leaderboard
+and achievements from `ios/gamecenter/gamecenter.json` (with the images
+`ios/gamecenter/<key>.png`) through the App Store Connect API. It is
+idempotent and runs when those files change on `main`, or by hand.
 
 **By hand, on a Mac:**
 

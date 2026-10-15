@@ -243,30 +243,37 @@ class _RoundsPicker extends StatelessWidget {
           style: IconButton.styleFrom(backgroundColor: C.surface, foregroundColor: C.goldText, minimumSize: const Size(48, 48), side: const BorderSide(color: C.lineSoft)),
           icon: Icon(icon),
         );
-    return Row(children: [
-      step(Icons.remove_rounded, '−', -1),
-      const SizedBox(width: 8),
-      Expanded(
-        child: Semantics(
-          button: true,
-          label: s.t('setup.rounds'),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: unlimited ? null : () => _type(context),
-            child: Container(
-              height: 52,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: unlimited ? C.lineSoft : C.line)),
-              child: Text(
-                unlimited ? '∞' : s.n(value),
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: unlimited ? C.faint : C.goldLight),
-              ),
+    // − number + always reads left to right (plus on the right, also in
+    // Persian); the "unlimited" chip follows the reading direction.
+    final number = Expanded(
+      child: Semantics(
+        button: true,
+        label: s.t('setup.rounds'),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: unlimited ? null : () => _type(context),
+          child: Container(
+            height: 52,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: unlimited ? C.lineSoft : C.line)),
+            child: Text(
+              unlimited ? '∞' : s.n(value),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: unlimited ? C.faint : C.goldLight),
             ),
           ),
         ),
       ),
-      const SizedBox(width: 8),
-      step(Icons.add_rounded, '+', 1),
+    );
+    return Row(children: [
+      Expanded(
+        child: Row(textDirection: TextDirection.ltr, children: [
+          step(Icons.remove_rounded, '−', -1),
+          const SizedBox(width: 8),
+          number,
+          const SizedBox(width: 8),
+          step(Icons.add_rounded, '+', 1),
+        ]),
+      ),
       const SizedBox(width: 12),
       FilterChip(
         label: Text(s.t('setup.unlimited')),

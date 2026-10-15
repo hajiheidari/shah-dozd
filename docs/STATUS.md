@@ -28,9 +28,11 @@ Updated 2026-10-15.
 
 ## Needs a device, an account or a secret (not done here)
 
-* Android release builds: the Gradle build needs Maven Central, which
-  rate-limited this environment; CI (`.github/workflows/android.yml`) builds
-  them on GitHub. Signing needs your upload key (docs/RELEASE.md).
+* Android release builds: the Android SDK was installed here, but Gradle's
+  downloads from Maven Central were rate-limited (HTTP 429) twice, so no APK
+  was produced in this environment. CI (`.github/workflows/android.yml`)
+  builds the AAB and APKs on GitHub; signing needs your upload key
+  (docs/RELEASE.md).
 * iOS / iPadOS: needs a Mac with Xcode and an Apple Developer team. The
   project is configured (bundle id, name, locales, icons, launch colour) but
   has not been compiled.

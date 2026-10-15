@@ -1,5 +1,5 @@
 # Android: builds the Play bundle (AAB), the Cafe Bazaar APK and the
-# direct-download APKs on every push to main and by hand.
+# direct-download APKs when app code changes, and by hand.
 #
 # Signing (optional repository secrets; without them the builds are signed
 # with a throwaway debug key and must not be uploaded to a store):
@@ -10,7 +10,8 @@ name: Android
 
 on:
   push:
-    branches: [main]
+    branches: ['**']
+    paths: ['lib/**', 'android/**', 'assets/**', 'pubspec.*', '.github/workflows/android.yml']
   workflow_dispatch:
 
 jobs:

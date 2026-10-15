@@ -1,0 +1,12 @@
+# espadna.com/shahdozd-app/*: landing pages (en, fa/, hi/, privacy/), served by
+# this Worker route on the espadna.com zone (a route wins over the
+# espadna-site Worker, same as Tiaro, Adadi and Mafia). Deployed by
+# .github/workflows/web.yml.
+name = "shahdozd-app"
+compatibility_date = "2026-10-01"
+routes = [{ pattern = "espadna.com/shahdozd-app*", zone_name = "espadna.com" }]
+
+[assets]
+directory = "../build/landing"
+html_handling = "auto-trailing-slash"
+not_found_handling = "404-page"

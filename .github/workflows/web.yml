@@ -1,0 +1,58 @@
+# Web: tests, builds and deploys the game and its landing pages.
+#   shahdozd.espadna.com         ← build/site     (Worker "shahdozd")
+#   espadna.com/shahdozd-app/*   ← build/landing  (Worker "shahdozd-app", route on the espadna.com zone)
+# espadna.ir copies both automatically (hajiheidari/espadna-site, mirror-ir/), from files.json.
+#
+# Tests and builds on every push; deploys only from main (or by hand:
+# Actions → Web → Run workflow). Repository secrets, the same values as in
+# hajiheidari/espadna-site: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
+# Without them the site is still built and tested, only not deployed.
+# Never run `wrangler deploy` by hand.
+name: Web
+
+on:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+
+concurrency:
+  group: web-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.7
+          channel: stable
+          cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: flutter pub get
+      - name: Analyze
+        run: flutter analyze
+      - name: Tests (engine, every deal × every guess; widgets)
+        run: flutter test
+      - name: Build
+        run: node tools/web_build.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shahdozd-web
+          path: build/shahdozd-web.zip
+          retention-days: 30
+      - name: Deploy to Cloudflare
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [[ -z "$CLOUDFLARE_API_TOKEN" || -z "$CLOUDFLARE_ACCOUNT_ID" ]]; then
+            echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set: built but not deployed."
+            exit 0
+          fi
+          npx --yes wrangler@4 deploy -c deploy/wrangler.site.toml
+          npx --yes wrangler@4 deploy -c deploy/wrangler.landing.toml

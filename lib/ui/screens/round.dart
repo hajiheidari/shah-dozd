@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../app/privacy.dart';
 import '../../app/sfx.dart';
 import '../../app/state.dart';
 import '../../engine/engine.dart';
@@ -78,6 +79,7 @@ class _RoundScreenState extends State<RoundScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    SecureScreen.set(false);
     _shuffleTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -176,6 +178,7 @@ class _RoundScreenState extends State<RoundScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
+    SecureScreen.set(phase.index <= _Phase.reveal.index);
     final Widget body;
     if (covered) {
       body = _Cover(onTap: () => setState(() {

@@ -1,0 +1,10 @@
+# shahdozd.espadna.com: the game (Flutter web build, static).
+# Deployed by .github/workflows/web.yml; never run `wrangler deploy` by hand.
+name = "shahdozd"
+compatibility_date = "2026-10-01"
+routes = [{ pattern = "shahdozd.espadna.com", custom_domain = true }]
+
+[assets]
+directory = "../build/site"
+html_handling = "auto-trailing-slash"
+not_found_handling = "single-page-application"

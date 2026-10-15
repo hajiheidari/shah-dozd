@@ -11,6 +11,7 @@ on:
     paths:
       - ios/gamecenter/**
       - tools/gamecenter_setup.mjs
+      - tools/ios_signing.mjs
 
 permissions:
   contents: read

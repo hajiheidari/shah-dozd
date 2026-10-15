@@ -75,6 +75,14 @@ async function api(method, path, body) {
       r = retry;
     }
   }
+  // Apple's API sometimes answers 5xx for a moment (e.g. right after
+  // creating an object): retry reads a few times.
+  for (const wait of [5, 15, 30]) {
+    if (method !== 'GET' || r.status < 500) break;
+    console.error(`${method} ${path} → ${r.status}, retrying in ${wait}s`);
+    await new Promise((ok) => setTimeout(ok, wait * 1000));
+    r = await send(keyKind);
+  }
   const text = await r.text();
   if (!r.ok) {
     const detail = (() => {

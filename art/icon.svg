@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<defs>
+<linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6E3A6"/><stop offset=".45" stop-color="#D4AE55"/><stop offset="1" stop-color="#8A6424"/></linearGradient>
+<radialGradient id="bg" cx=".5" cy=".42" r=".7"><stop offset="0" stop-color="#3A2A80"/><stop offset="1" stop-color="#0C0F2A"/></radialGradient>
+</defs>
+<rect width="1024" height="1024" fill="url(#bg)"/>
+<circle cx="512" cy="540" r="300" fill="none" stroke="#D4AE55" stroke-opacity=".35" stroke-width="6"/>
+<g fill="none" stroke="url(#gold)" stroke-width="10" stroke-opacity=".8"><rect x="342" y="370" width="340" height="340"/><rect x="342" y="370" width="340" height="340" transform="rotate(45 512 540)"/></g>
+<path d="M300 690L282 400L398 512L512 300L626 512L742 400L724 690Z" fill="url(#gold)" stroke="#7E5A1E" stroke-width="6" stroke-linejoin="round"/>
+<rect x="292" y="660" width="440" height="76" rx="10" fill="url(#gold)" stroke="#7E5A1E" stroke-width="6"/>
+<circle cx="282" cy="396" r="22" fill="url(#gold)"/><circle cx="512" cy="292" r="26" fill="url(#gold)"/><circle cx="742" cy="396" r="22" fill="url(#gold)"/>
+<path d="M512 470l40 62-40 62-40-62z" fill="#B3243A" stroke="#F6E3A6" stroke-width="5"/>
+<circle cx="512" cy="698" r="18" fill="#B3243A"/><circle cx="410" cy="698" r="13" fill="#2E8B6A"/><circle cx="614" cy="698" r="13" fill="#2F5DB0"/>
+</svg>

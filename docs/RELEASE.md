@@ -94,6 +94,16 @@ updates will fail to install over the old version.
 
 ## iPhone and iPad
 
+**CI (no Mac needed):** `.github/workflows/iOS (TestFlight)` builds on a
+GitHub Mac and uploads to TestFlight. It runs by hand (Actions → "iOS
+(TestFlight)" → Run workflow) or when `ios/BUILD` changes on `main`. Secrets:
+`ASC_ISSUER_ID`, `ASC_KEY_ID`, `ASC_PRIVATE_KEY` (+ the Cloudflare ones, to
+read the team's kept signing certificate, see `tools/ios_signing.mjs`). The app
+record must exist in App Store Connect with bundle id `com.espadna.shahdozd`
+(Apple's API cannot create it). Build number = the workflow run number.
+
+**By hand, on a Mac:**
+
 On a Mac with Xcode (current stable) and an Apple Developer account:
 
 ```bash

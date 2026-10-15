@@ -397,6 +397,7 @@ class _RevealView extends StatelessWidget {
           label: s.t('deal.cardA11y'),
           button: true,
           child: Listener(
+            key: const Key('roleCard'),
             onPointerDown: (_) => onHold(true),
             onPointerUp: (_) => onHold(false),
             onPointerCancel: (_) => onHold(false),
@@ -508,14 +509,14 @@ class _AnnounceView extends StatelessWidget {
             child: Column(children: [
               CardArt(role: r, width: w, glow: C.gold),
               const SizedBox(height: 8),
-              Text(s.role(r, scenario.mode), style: F.title(s.lang, 24)),
-              Text(p.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+              FittedBox(fit: BoxFit.scaleDown, child: Text(s.role(r, scenario.mode), maxLines: 1, style: F.title(s.lang, 24))),
+              Text(p.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
             ]),
           );
       return Column(children: [
         Text(s.t('announce.title'), textAlign: TextAlign.center, style: F.title(s.lang, 30)),
         const Spacer(),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [col(Role.king, king, 0), col(scenario.guesser, guesser, 200)]),
+        Row(children: [Expanded(child: col(Role.king, king, 0)), const SizedBox(width: 12), Expanded(child: col(scenario.guesser, guesser, 200))]),
         const Spacer(),
         GoldButton(label: s.t('announce.ready'), sub: s.t('announce.go', {'name': guesser.name}), onPressed: onReady),
       ]);
@@ -566,7 +567,7 @@ class _GuessView extends StatelessWidget {
                 runSpacing: 12,
                 children: [
                   for (final p in cands)
-                    _Pickable(player: p, width: w, selected: picks.contains(p.id), onTap: () => onToggle(p.id)),
+                    _Pickable(key: Key('pick-${p.id}'), player: p, width: w, selected: picks.contains(p.id), onTap: () => onToggle(p.id)),
                 ],
               );
             }),
@@ -580,7 +581,7 @@ class _GuessView extends StatelessWidget {
 }
 
 class _Pickable extends StatelessWidget {
-  const _Pickable({required this.player, required this.width, required this.selected, required this.onTap});
+  const _Pickable({super.key, required this.player, required this.width, required this.selected, required this.onTap});
   final Player player;
   final double width;
   final bool selected;

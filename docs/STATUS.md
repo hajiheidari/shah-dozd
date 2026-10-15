@@ -33,15 +33,14 @@ Updated 2026-10-15.
   was produced in this environment. CI (`.github/workflows/android.yml`)
   builds the AAB and APKs on GitHub; signing needs your upload key
   (docs/RELEASE.md).
-* iOS / iPadOS: needs a Mac with Xcode and an Apple Developer team. The
-  project is configured (bundle id, name, locales, icons, launch colour) but
-  has not been compiled.
 * Store uploads (Google Play, Cafe Bazaar, App Store), Play Console forms.
-* Cloudflare deploy: needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
-  in this repository's secrets; then merge to `main`.
-* espadna-site: branch `claude/cool-johnson-mrzl83` (home card, sitemap,
-  mirror entries) waits to be merged after the first deploy; create
-  `shahdozd.espadna.ir` + SSL on the Iranian host.
+* Live since 2026-10-15: shahdozd.espadna.com and espadna.com/shahdozd-app
+  (deployed by CI from `main`); the card is on the espadna.com home pages and
+  both sites are on the espadna.ir mirror branch (the .ir host itself could
+  not be reached from the build environment to check it).
+* iOS TestFlight: the workflow is ready but skipped because the repository
+  secret `ASC_PRIVATE_KEY` is missing (`ASC_ISSUER_ID` and `ASC_KEY_ID` are
+  set). The app record `com.espadna.shahdozd` must exist in App Store Connect.
 * Real-device checks: FLAG_SECURE on Android, the iOS app-switcher snapshot,
   haptics, audio latency, foldables, VoiceOver/TalkBack.
 * Web PWA offline: the service worker is written and registered on HTTPS

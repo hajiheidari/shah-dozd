@@ -40,7 +40,7 @@ class S {
   }
 
   /// Signed points, e.g. "+800".
-  String pts(int v) => v > 0 ? '+${n(v)}' : n(v);
+  String pts(int v) => v > 0 ? '${rtl ? '\u200E' : ''}+${n(v)}' : n(v);
 
   String t(String key, [Map<String, Object> vars = const {}]) {
     final row = _text[key];

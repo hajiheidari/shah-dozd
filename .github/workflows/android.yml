@@ -5,6 +5,9 @@
 # with a throwaway debug key and must not be uploaded to a store):
 #   ANDROID_KEYSTORE_BASE64   base64 of the upload keystore (.jks)
 #   ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+# Ad ids (docs/MONETIZATION.md), repository *variables* (Settings → Secrets
+# and variables → Actions → Variables): ADMOB_REWARDED_ANDROID, ADIVERY_APP_ID,
+# ADIVERY_REWARDED. Unset = AdMob test ads / Adivery off.
 # Nothing is published: download the files from the run's artifacts.
 name: Android
 
@@ -43,13 +46,13 @@ jobs:
           keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
           PROPS
       - name: Google Play (AAB)
-        run: flutter build appbundle --release --flavor play --dart-define=CHANNEL=play
+        run: flutter build appbundle --release --flavor play --dart-define=CHANNEL=play --dart-define=ADMOB_REWARDED_ANDROID=${{ vars.ADMOB_REWARDED_ANDROID }} --dart-define=ADIVERY_APP_ID=${{ vars.ADIVERY_APP_ID }} --dart-define=ADIVERY_REWARDED=${{ vars.ADIVERY_REWARDED }}
       - name: Cafe Bazaar (APK)
-        run: flutter build apk --release --flavor bazaar --dart-define=CHANNEL=bazaar
+        run: flutter build apk --release --flavor bazaar --dart-define=CHANNEL=bazaar --dart-define=ADMOB_REWARDED_ANDROID=${{ vars.ADMOB_REWARDED_ANDROID }} --dart-define=ADIVERY_APP_ID=${{ vars.ADIVERY_APP_ID }} --dart-define=ADIVERY_REWARDED=${{ vars.ADIVERY_REWARDED }}
       - name: Direct download (universal + per-ABI APKs)
         run: |
-          flutter build apk --release --flavor direct --dart-define=CHANNEL=apk
-          flutter build apk --release --flavor direct --dart-define=CHANNEL=apk --split-per-abi
+          flutter build apk --release --flavor direct --dart-define=CHANNEL=apk --dart-define=ADMOB_REWARDED_ANDROID=${{ vars.ADMOB_REWARDED_ANDROID }} --dart-define=ADIVERY_APP_ID=${{ vars.ADIVERY_APP_ID }} --dart-define=ADIVERY_REWARDED=${{ vars.ADIVERY_REWARDED }}
+          flutter build apk --release --flavor direct --dart-define=CHANNEL=apk --split-per-abi --dart-define=ADMOB_REWARDED_ANDROID=${{ vars.ADMOB_REWARDED_ANDROID }} --dart-define=ADIVERY_APP_ID=${{ vars.ADIVERY_APP_ID }} --dart-define=ADIVERY_REWARDED=${{ vars.ADIVERY_REWARDED }}
       - uses: actions/upload-artifact@v4
         with:
           name: shahdozd-android

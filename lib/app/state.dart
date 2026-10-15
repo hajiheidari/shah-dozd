@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../engine/engine.dart';
 import '../l10n/strings.dart';
+import '../shop/wallet.dart';
 
 /// User preferences. Rules-related ones are copied into each new tournament.
 class Settings {
@@ -76,16 +77,19 @@ class Settings {
 
 /// Everything the app keeps between launches, in local storage only.
 class AppState extends ChangeNotifier {
-  AppState._(this._prefs, this.settings, this.savedPlayers, this.tournament, this._fallbackLang);
+  AppState._(this._prefs, this.settings, this.savedPlayers, this.tournament, this._fallbackLang, [Wallet? wallet])
+      : wallet = wallet ?? Wallet();
 
   static const _kSettings = 'settings.v1';
   static const _kPlayers = 'players.v1';
   static const _kTournament = 'tournament.v1';
+  static const _kWallet = 'wallet.v1';
 
   final SharedPreferences? _prefs;
   Settings settings;
   List<Player> savedPlayers;
   Tournament? tournament;
+  final Wallet wallet;
   final Lang _fallbackLang;
 
   /// Loads saved state. Corrupt entries are dropped rather than crashing.
@@ -115,13 +119,14 @@ class AppState extends ChangeNotifier {
       }
     } catch (_) {}
     final t = read(_kTournament, Tournament.fromJson);
-    return AppState._(prefs, settings, players, t, _deviceLang());
+    final wallet = read(_kWallet, Wallet.fromJson);
+    return AppState._(prefs, settings, players, t, _deviceLang(), wallet);
   }
 
   /// For tests: in-memory state.
   @visibleForTesting
-  factory AppState.memory({Settings settings = const Settings(), Lang fallback = Lang.en}) =>
-      AppState._(null, settings, [], null, fallback);
+  factory AppState.memory({Settings settings = const Settings(), Lang fallback = Lang.en, Wallet? wallet}) =>
+      AppState._(null, settings, [], null, fallback, wallet);
 
   static Lang _deviceLang() {
     // On the Iranian mirror (espadna.ir) the game opens in Persian.
@@ -185,6 +190,12 @@ class AppState extends ChangeNotifier {
     } else {
       _write(_kTournament, jsonEncode(t.toJson()));
     }
+    notifyListeners();
+  }
+
+  /// Call after every change to [wallet].
+  void saveWallet() {
+    _write(_kWallet, jsonEncode(wallet.toJson()));
     notifyListeners();
   }
 

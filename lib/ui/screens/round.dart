@@ -10,8 +10,11 @@ import '../../engine/engine.dart';
 import '../../l10n/strings.dart';
 import '../theme.dart';
 import '../widgets.dart';
+import '../../l10n/penalties.dart';
+import '../../shop/catalog.dart';
 import 'champion.dart';
 import 'scoreboard.dart';
+import 'shop.dart';
 
 enum _Phase { shuffle, handover, reveal, announce, guess, result }
 
@@ -673,27 +676,59 @@ class _ResultViewState extends State<_ResultView> {
 
   Future<void> _challenge() async {
     final s = S.of(context);
+    final wallet = AppScope.read(context).wallet;
     final loser = widget.t.player(_loser()!);
-    final list = [...s.challenges]..shuffle();
+    final owned = {
+      PenaltyPack.base,
+      for (final i in shopItems) if (i.pack != null && wallet.owns(i.id)) i.pack!,
+    };
+    final list = [for (final p in penalties) if (owned.contains(p.pack)) p]..shuffle();
+    final morePacks = owned.length < PenaltyPack.values.length;
     var i = 0;
     await showDialog<void>(
       context: context,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, set) => AlertDialog(
-          title: Text(s.t('result.challenge.for', {'name': loser.name}), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            CardArt(role: widget.scenario.guard, width: 90),
-            const SizedBox(height: 14),
-            Text(list[i % list.length], textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, height: 1.7, color: C.ivory)),
-          ]),
-          actions: [
-            TextButton(onPressed: () => set(() => i++), child: Text(s.t('result.challenge.another'), style: const TextStyle(color: C.muted))),
-            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(s.t('result.challenge.done'), style: const TextStyle(color: C.gold, fontWeight: FontWeight.w800))),
-          ],
-        ),
+        builder: (ctx, set) {
+          final p = list[i % list.length];
+          return AlertDialog(
+            title: Text(s.t('result.challenge.for', {'name': loser.name}), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+            content: SingleChildScrollView(
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                CardArt(role: p.byExecutioner ? widget.scenario.guard : _loserRole(), width: 84),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(color: p.byExecutioner ? C.ruby : C.surfaceHi, borderRadius: BorderRadius.circular(99)),
+                  child: Text(s.t(p.byExecutioner ? 'penalty.byExec' : 'penalty.byLoser'),
+                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: Colors.white)),
+                ),
+                const SizedBox(height: 12),
+                Text(p.text[s.lang.index], textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, height: 1.7, color: C.ivory)),
+                const SizedBox(height: 10),
+                Text(s.t('penalty.safe'), textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, height: 1.6, color: C.faint)),
+                if (morePacks)
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ShopScreen()));
+                    },
+                    icon: const Icon(Icons.storefront_outlined, size: 18),
+                    label: Text(s.t('penalty.more')),
+                    style: TextButton.styleFrom(foregroundColor: C.gold),
+                  ),
+              ]),
+            ),
+            actions: [
+              TextButton(onPressed: () => set(() => i++), child: Text(s.t('result.challenge.another'), style: const TextStyle(color: C.muted))),
+              TextButton(onPressed: () => Navigator.pop(ctx), child: Text(s.t('result.challenge.done'), style: const TextStyle(color: C.gold, fontWeight: FontWeight.w800))),
+            ],
+          );
+        },
       ),
     );
   }
+
+  Role _loserRole() => widget.deal[_loser()!]!;
 
   @override
   Widget build(BuildContext context) {
@@ -752,7 +787,7 @@ class _ResultViewState extends State<_ResultView> {
           ]),
         ),
         if (showChallenge) ...[
-          GoldButton(label: s.t('result.challenge', {'guard': s.role(Role.executioner, sc.mode)}), secondary: true, icon: Icons.casino_outlined, onPressed: _challenge),
+          GoldButton(label: s.t('result.challenge', {'guard': s.role(Role.executioner, sc.mode)}), secondary: true, icon: Icons.gavel_rounded, onPressed: _challenge),
           const SizedBox(height: 10),
         ],
         GoldButton(label: t.isFinished ? s.t('result.champion') : s.t('result.next'), icon: t.isFinished ? Icons.emoji_events_outlined : Icons.replay_rounded, onPressed: widget.onNext),

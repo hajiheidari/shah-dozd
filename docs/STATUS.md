@@ -38,9 +38,7 @@ Updated 2026-10-15.
   (deployed by CI from `main`); the card is on the espadna.com home pages and
   both sites are on the espadna.ir mirror branch (the .ir host itself could
   not be reached from the build environment to check it).
-* iOS TestFlight: the workflow is ready but skipped because the repository
-  secret `ASC_PRIVATE_KEY` is missing (`ASC_ISSUER_ID` and `ASC_KEY_ID` are
-  set). The app record `com.espadna.shahdozd` must exist in App Store Connect.
+* iOS TestFlight: build 2 uploaded 2026-10-15 by `.github/workflows/ios.yml`.
 * Real-device checks: FLAG_SECURE on Android, the iOS app-switcher snapshot,
   haptics, audio latency, foldables, VoiceOver/TalkBack.
 * Web PWA offline: the service worker is written and registered on HTTPS
@@ -49,13 +47,11 @@ Updated 2026-10-15.
 ## Known limitations
 
 * No background music/ambience (only sound effects). Optional for later.
-* Premium is not purchasable: `lib/premium/` defines the store-independent
-  interface and `NoBilling`; adapters for Google Play Billing, Cafe Bazaar
-  (Poolakey) and Apple IAP are to be added only after their current SDKs,
-  policies and merchant accounts are verified. Purchases will not move
-  between stores (no accounts).
-* Cosmetic Premium content (card themes, extra art, sound packs, extra
-  challenge packs, custom challenges) is not made yet.
+* Coins shop (2026-10-15): card backs, card frames, penalty packs; coins from
+  sharing and rewarded ads (docs/MONETIZATION.md). AdMob runs on Google's
+  test ids and Adivery is off until the real ids are set. Coins live on the
+  device only; a share cannot be verified as an install (daily caps only).
+* No money purchases: `lib/premium/` keeps the store-independent interface.
 * The iOS home-screen name is "Shah Dozd Vazir" in every language
   (Android has localized names). Localized `InfoPlist.strings` need Xcode.
 * Screen readers: buttons and cards have labels, but the press-and-hold

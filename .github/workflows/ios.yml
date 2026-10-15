@@ -103,6 +103,7 @@ jobs:
           version=$(grep '^version:' pubspec.yaml | sed 's/version: *//; s/+.*//')
           echo "APP_VERSION=$version" >> "$GITHUB_ENV"
           flutter build ios --release --no-codesign --dart-define=CHANNEL=appstore \
+            --dart-define=ADMOB_REWARDED_IOS=${{ vars.ADMOB_REWARDED_IOS }} \
             --build-name="$version" --build-number=${{ github.run_number }}
 
       - name: Signing certificate and profile

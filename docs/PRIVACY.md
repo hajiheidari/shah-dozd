@@ -6,22 +6,30 @@ store release.
 
 **Shah, Thief & Minister** (Espadna) — effective October 2026.
 
-1. **No personal data is collected.** The game has no accounts and sends
-   nothing to any server.
+1. **We collect no personal data.** The game has no accounts and sends
+   nothing to our servers (ad networks: see 3).
 2. **Stored on your device only:** player names you type, avatar colours,
    scores and round history, and your settings. They stay in the app's own
    storage (or the browser's local storage for the web version) and are
    removed when you clear the app's or the browser's data or uninstall it.
-3. **No ads, analytics, trackers or third-party SDKs** that collect data.
-   The web version downloads only the game's own files from
-   shahdozd.espadna.com (or shahdozd.espadna.ir); the hosting provider may
-   keep standard server logs (IP address, time, file) for security.
-4. **Permissions:** none (no camera, microphone, location, contacts or
-   notifications). Android marks the screen as secure while roles are dealt,
+3. **No analytics or trackers.** The web version downloads only the game's
+   own files from shahdozd.espadna.com (or shahdozd.espadna.ir); the hosting
+   provider may keep standard server logs (IP address, time, file).
+   **Optional rewarded ads:** an ad plays only when the player taps "Watch an
+   ad" in the shop to earn coins. Google AdMob (Google Play, App Store builds)
+   or Adivery (Cafe Bazaar, direct APK builds) serve it and process the
+   advertising ID, device type and IP address under their own policies.
+   Requests are non-personalized. The web version has no ads.
+   **Sharing:** "Share with friends" opens the system share sheet with the
+   game's link; we never see contacts.
+4. **Permissions:** internet and, on Android, the advertising ID (both only
+   for the optional ads). No camera, microphone, location, contacts or
+   notifications. Android marks the screen as secure while roles are dealt,
    which only blocks screenshots during that step.
-5. **Children:** the game is suitable for families and collects nothing from
-   anyone, children included.
-6. **Purchases:** none today. If an optional, cosmetic-only purchase is
+5. **Children:** the game is meant for families and groups but is not
+   directed at children; ads are requested as non-personalized. Review the
+   Google Play Families and App Store Kids rules before targeting children.
+6. **Purchases:** coins are earned, never bought. If an optional purchase is
    added, it will be handled by the store of that version (Google Play, Cafe
    Bazaar or the App Store) and this policy will be updated first.
 7. **Contact:** via espadna.com.

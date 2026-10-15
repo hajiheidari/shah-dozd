@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Renders the vector sources in art/ to the bitmaps the app ships:
-//   art/cards/*.svg → assets/cards/*.webp (600×840, transparent corners)
+//   art/cards/**/*.svg → assets/cards/**/*.webp (600×840, transparent corners)
 //   art/icon.svg    → assets/icon/icon.png (1024), web/icons/*, web/favicon.png
 // Needs Playwright's Chromium (dev only):  node tools/render_art.mjs
 import { chromium } from 'playwright';
@@ -20,10 +20,14 @@ async function shot(svgPath, out, w, h) {
 mkdirSync(join(root, 'assets/cards'), { recursive: true });
 const tmp = join(root, 'build/art');
 mkdirSync(tmp, { recursive: true });
-for (const f of readdirSync(join(root, 'art/cards')).filter((f) => f.endsWith('.svg'))) {
-  const name = f.replace('.svg', '');
-  const png = join(tmp, name + '.png');
+// art/cards/<theme or backs>/<name>.svg → assets/cards/<same path>.webp
+const svgs = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+  e.isDirectory() ? svgs(join(dir, e.name)).map((f) => join(e.name, f)) : e.name.endsWith('.svg') ? [e.name] : []);
+for (const f of svgs(join(root, 'art/cards'))) {
+  const name = f.replace(/\.svg$/, '');
+  const png = join(tmp, name.replace(/\//g, '_') + '.png');
   await shot(join(root, 'art/cards', f), png, 600, 840);
+  mkdirSync(join(root, 'assets/cards', name, '..'), { recursive: true });
   execFileSync('convert', [png, '-quality', '90', '-define', 'webp:alpha-quality=100', join(root, 'assets/cards', name + '.webp')]);
 }
 mkdirSync(join(root, 'assets/icon'), { recursive: true });

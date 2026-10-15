@@ -10,6 +10,7 @@ import 'round.dart';
 import 'rules.dart';
 import 'scoreboard.dart';
 import 'settings.dart';
+import 'shop.dart';
 import 'setup.dart';
 
 class _ModeLook {
@@ -44,7 +45,7 @@ class HomeScreen extends StatelessWidget {
             SliverToBoxAdapter(
               child: Row(children: [
                 IconBox(icon: Icons.groups_2_outlined, label: s.t('home.players'), onPressed: () => _push(context, const SavedPlayersScreen())),
-                Expanded(child: Text(s.t('home.badges'), textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: C.faint))),
+                Expanded(child: Center(child: CoinPill(coins: app.wallet.coins, label: s.t('home.shop'), onTap: () => _push(context, const ShopScreen())))),
                 IconBox(icon: Icons.settings_outlined, label: s.t('home.settings'), onPressed: () => _push(context, const SettingsScreen())),
               ]),
             ),
@@ -195,7 +196,11 @@ class _ModeCard extends StatelessWidget {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(s.mode(look.mode), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 2),
-                Text(s.modeLine(look.mode), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFB9B0A0))),
+                // Always two lines high, so every card's art has the same size.
+                SizedBox(
+                  height: MediaQuery.textScalerOf(context).scale(12) * 1.5 * 2 + 2,
+                  child: Text(s.modeLine(look.mode), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFB9B0A0))),
+                ),
               ]),
             ),
           ]),

@@ -22,8 +22,10 @@ class SettingsScreen extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: C.goldText)),
             const SizedBox(height: 8),
-            Container(
-              decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(Space.radius), border: Border.all(color: C.lineSoft)),
+            Material(
+              color: C.surface,
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Space.radius), side: const BorderSide(color: C.lineSoft)),
               child: Column(children: children),
             ),
           ]),
@@ -100,7 +102,7 @@ class SettingsScreen extends StatelessWidget {
                 toggle(s.t('settings.challenges'), st.challenges, (v) => set(st.copyWith(challenges: v))),
                 ListTile(
                   title: Text(s.t('rules.title')),
-                  trailing: Icon(s.rtl ? Icons.chevron_left : Icons.chevron_right, color: C.goldText),
+                  trailing: const Icon(Icons.chevron_right, color: C.goldText), // mirrored in RTL
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RulesScreen())),
                 ),
               ]),

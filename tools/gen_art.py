@@ -40,31 +40,51 @@ def neck(shade, w=34, top=246, h=56):
     return f'<rect x="{150-w/2}" y="{top}" width="{w}" height="{h}" rx="8" fill="{shade}"/>'
 
 
-def card(name, bg_in, bg_out, body, extra_defs='', ray='#FFFFFF', ray_op='.06'):
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" width="600" height="840">
-<defs>{GOLD_DEFS}
-<radialGradient id="bg" cx=".5" cy=".46" r=".62"><stop offset="0" stop-color="{bg_in}"/><stop offset="1" stop-color="{bg_out}"/></radialGradient>
-<clipPath id="arch"><path d="{ARCH}"/></clipPath>{extra_defs}
+# Frame themes sold in the shop (lib/shop/catalog.dart): metal gradient,
+# flat metal colour and the card's base colour. 'gold' is the default and is
+# written to the output root; the others go to <out>/<theme>/.
+THEMES = {
+    'gold': (('#F6E3A6', '#D4AE55', '#8A6424'), '#D4AE55', '#11142F'),
+    'silver': (('#FBFCFE', '#B9C2CF', '#646C7A'), '#B9C2CF', '#11141C'),
+    'rose': (('#FBE1D6', '#DB9A84', '#8A4B3C'), '#DB9A84', '#1A1020'),
+    'jade': (('#D4F2DF', '#5FB08A', '#22604A'), '#5FB08A', '#0A1A17'),
+}
+
+CARD_TEMPLATE = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" width="600" height="840">
+<defs>§GOLD_DEFS§
+<linearGradient id="frm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="§M0§"/><stop offset=".45" stop-color="§M1§"/><stop offset="1" stop-color="§M2§"/></linearGradient>
+<radialGradient id="bg" cx=".5" cy=".46" r=".62"><stop offset="0" stop-color="§BG_IN§"/><stop offset="1" stop-color="§BG_OUT§"/></radialGradient>
+<clipPath id="arch"><path d="§ARCH§"/></clipPath>
+<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="§BASE§" stop-opacity="0"/><stop offset="1" stop-color="§BASE§" stop-opacity=".55"/></linearGradient>§EXTRA_DEFS§
 </defs>
-<rect x="3" y="3" width="294" height="414" rx="22" fill="#11142F"/>
+<rect x="3" y="3" width="294" height="414" rx="22" fill="§BASE§"/>
 <rect x="3" y="3" width="294" height="414" rx="22" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="2"/>
-<rect x="12" y="12" width="276" height="396" rx="15" fill="none" stroke="url(#gold)" stroke-width="2.2"/>
-<rect x="19" y="19" width="262" height="382" rx="10" fill="none" stroke="#D4AE55" stroke-opacity=".3" stroke-width="1"/>
+<rect x="12" y="12" width="276" height="396" rx="15" fill="none" stroke="url(#frm)" stroke-width="2.2"/>
+<rect x="19" y="19" width="262" height="382" rx="10" fill="none" stroke="§FLAT§" stroke-opacity=".3" stroke-width="1"/>
 <g clip-path="url(#arch)">
 <rect width="300" height="420" fill="url(#bg)"/>
-<circle cx="150" cy="214" r="170" fill="none" stroke="{ray}" stroke-opacity="{ray_op}" stroke-width="340" stroke-dasharray="26.7 26.7"/>
+<circle cx="150" cy="214" r="170" fill="none" stroke="§RAY§" stroke-opacity="§RAY_OP§" stroke-width="340" stroke-dasharray="26.7 26.7"/>
 <circle cx="150" cy="214" r="96" fill="#fff" opacity=".05"/>
-{body}
+§BODY§
 <rect y="330" width="300" height="90" fill="url(#fade)"/>
 </g>
-<path d="{ARCH}" fill="none" stroke="url(#gold)" stroke-width="3"/>
-<path d="M30 404V184C30 120 92 92 150 46C208 92 270 120 270 184V404" fill="none" stroke="#D4AE55" stroke-opacity=".45" stroke-width="1"/>
-<path d="M150 34l6 8-6 8-6-8z" fill="url(#gold)"/>
-<g fill="url(#gold)"><path d="M30 30l5 5-5 5-5-5z"/><path d="M270 30l5 5-5 5-5-5z"/><path d="M30 380l5 5-5 5-5-5z"/><path d="M270 380l5 5-5 5-5-5z"/></g>
+<path d="§ARCH§" fill="none" stroke="url(#frm)" stroke-width="3"/>
+<path d="M30 404V184C30 120 92 92 150 46C208 92 270 120 270 184V404" fill="none" stroke="§FLAT§" stroke-opacity=".45" stroke-width="1"/>
+<path d="M150 34l6 8-6 8-6-8z" fill="url(#frm)"/>
+<g fill="url(#frm)"><path d="M30 30l5 5-5 5-5-5z"/><path d="M270 30l5 5-5 5-5-5z"/><path d="M30 380l5 5-5 5-5-5z"/><path d="M270 380l5 5-5 5-5-5z"/></g>
 </svg>'''
-    svg = svg.replace('{extra_defs}', '')
-    svg = svg.replace('</defs>', '<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#11142F" stop-opacity="0"/><stop offset="1" stop-color="#11142F" stop-opacity=".55"/></linearGradient></defs>', 1)
-    (OUT / f'{name}.svg').write_text(svg)
+
+
+def card(name, bg_in, bg_out, body, extra_defs='', ray='#FFFFFF', ray_op='.06'):
+    for theme, ((m0, m1, m2), flat, base) in THEMES.items():
+        svg = CARD_TEMPLATE
+        for k, v in [('GOLD_DEFS', GOLD_DEFS), ('EXTRA_DEFS', extra_defs), ('ARCH', ARCH),
+                     ('BG_IN', bg_in), ('BG_OUT', bg_out), ('BASE', base), ('FLAT', flat), ('RAY_OP', ray_op),
+                     ('RAY', ray), ('M0', m0), ('M1', m1), ('M2', m2), ('BODY', body)]:
+            svg = svg.replace('§' + k + '§', v)
+        folder = OUT if theme == 'gold' else OUT / theme
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / f'{name}.svg').write_text(svg)
 
 
 # ---------- KING (Shah / Raja) ----------
@@ -258,29 +278,81 @@ joker = f'''
 <g fill="#7A2CA0"><circle cx="118" cy="183" r="3"/><circle cx="150" cy="180" r="3"/><circle cx="182" cy="183" r="3"/></g>
 <circle cx="50" cy="153" r="8" fill="url(#gold)" stroke="#7E5A1E"/><circle cx="250" cy="153" r="8" fill="#F6EEDC" stroke="#7E5A1E"/><circle cx="172" cy="80" r="8" fill="url(#gold)" stroke="#7E5A1E"/>
 '''
-card('joker', '#B4419A', '#260B2C', joker, extra_defs='')
-# inject pattern def for joker
-p = OUT / 'joker.svg'
-p.write_text(p.read_text().replace('</defs>', joker_defs + '</defs>', 1))
+card('joker', '#B4419A', '#260B2C', joker, extra_defs=joker_defs)
 
-# ---------- CARD BACK ----------
-back = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" width="600" height="840">
-<defs>{GOLD_DEFS}
-<pattern id="lat" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M12 2L22 12L12 22L2 12Z" fill="none" stroke="#D4AE55" stroke-opacity=".22" stroke-width="1"/><circle cx="12" cy="12" r="1.4" fill="#D4AE55" fill-opacity=".35"/></pattern>
-<radialGradient id="bg" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="#2A2466"/><stop offset="1" stop-color="#0E1130"/></radialGradient>
-</defs>
-<rect x="3" y="3" width="294" height="414" rx="22" fill="url(#bg)"/>
-<rect x="22" y="22" width="256" height="376" rx="10" fill="url(#lat)"/>
-<rect x="12" y="12" width="276" height="396" rx="15" fill="none" stroke="url(#gold)" stroke-width="2.2"/>
-<rect x="22" y="22" width="256" height="376" rx="10" fill="none" stroke="#D4AE55" stroke-opacity=".5" stroke-width="1"/>
-<circle cx="150" cy="210" r="78" fill="#121637" stroke="url(#gold)" stroke-width="2.5"/>
-<circle cx="150" cy="210" r="68" fill="none" stroke="#D4AE55" stroke-opacity=".4" stroke-width="1"/>
-<g fill="none" stroke="url(#gold)" stroke-width="2"><rect x="106" y="166" width="88" height="88"/><rect x="106" y="166" width="88" height="88" transform="rotate(45 150 210)"/></g>
-<path d="M118 232L114 190L132 206L150 178L168 206L186 190L182 232Z" fill="url(#gold)"/>
-<rect x="116" y="228" width="68" height="10" rx="2" fill="url(#goldh)"/>
-<circle cx="150" cy="176" r="4" fill="url(#gold)"/>
-<path d="M150 200l6 9-6 9-6-9z" fill="#B3243A"/>
-<g fill="url(#gold)"><path d="M150 40l7 9-7 9-7-9z"/><path d="M150 362l7 9-7 9-7-9z"/></g>
-</svg>'''
-(OUT / 'back.svg').write_text(back)
-print('ok', sorted(x.name for x in OUT.iterdir()))
+# ---------- CARD BACKS ----------
+# 'classic' is the free back (out/back.svg); the others are sold in the shop
+# (lib/shop/catalog.dart) and go to out/backs/<name>.svg.
+import math
+
+LATTICE = ('<path d="M12 2L22 12L12 22L2 12Z" fill="none" stroke="#D4AE55" stroke-opacity=".22" stroke-width="1"/>'
+           '<circle cx="12" cy="12" r="1.4" fill="#D4AE55" fill-opacity=".35"/>', 24)
+STARS = ('<circle cx="5" cy="7" r=".9" fill="#fff" fill-opacity=".7"/><circle cx="23" cy="4" r=".6" fill="#fff" fill-opacity=".5"/>'
+         '<circle cx="15" cy="19" r="1.2" fill="#F6E3A6" fill-opacity=".8"/><circle cx="30" cy="26" r=".7" fill="#fff" fill-opacity=".6"/>'
+         '<circle cx="9" cy="30" r=".5" fill="#fff" fill-opacity=".5"/>', 34)
+PAISLEY = ('<path d="M18 6C26 8 28 20 20 24C13 27 9 19 15 16C19 14 21 18 18 20" fill="none" stroke="#D4AE55" stroke-opacity=".35" '
+           'stroke-width="1.4" stroke-linecap="round"/><circle cx="6" cy="28" r="1.3" fill="#D4AE55" fill-opacity=".35"/>', 36)
+WAVES = ('<path d="M0 10Q7.5 4 15 10T30 10M0 22Q7.5 16 15 22T30 22" fill="none" stroke="#D4AE55" stroke-opacity=".25" stroke-width="1.2"/>', 30)
+RAYS = (None, 0)
+
+_sun_rays = ''.join(
+    f'<path d="M150 210L{150 + 60 * math.cos(a / 16 * 2 * math.pi):.1f} {210 + 60 * math.sin(a / 16 * 2 * math.pi):.1f}"/>'
+    for a in range(16))
+
+EMBLEMS = {
+    'crown': ('<g fill="none" stroke="url(#gold)" stroke-width="2"><rect x="106" y="166" width="88" height="88"/>'
+              '<rect x="106" y="166" width="88" height="88" transform="rotate(45 150 210)"/></g>'
+              '<path d="M118 232L114 190L132 206L150 178L168 206L186 190L182 232Z" fill="url(#gold)"/>'
+              '<rect x="116" y="228" width="68" height="10" rx="2" fill="url(#goldh)"/>'
+              '<circle cx="150" cy="176" r="4" fill="url(#gold)"/>'
+              '<path d="M150 200l6 9-6 9-6-9z" fill="GEM"/>'),
+    'moon': ('<path d="M168 172A44 44 0 1 0 168 248A36 36 0 1 1 168 172Z" fill="url(#gold)"/>'
+             '<g fill="url(#gold)"><path d="M182 186l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/><path d="M194 220l2 4 4 2-4 2-2 4-2-4-4-2 4-2z"/></g>'),
+    'boteh': ('<path d="M150 166C186 174 194 230 158 250C128 266 108 232 128 214C142 202 160 212 152 226" fill="none" '
+              'stroke="url(#gold)" stroke-width="5" stroke-linecap="round"/>'
+              '<path d="M150 182C170 190 174 222 156 234" fill="none" stroke="url(#gold)" stroke-width="2" stroke-opacity=".7"/>'
+              '<circle cx="141" cy="222" r="5" fill="GEM"/>'),
+    'sun': ('<g stroke="url(#gold)" stroke-width="3" stroke-linecap="round">' + _sun_rays + '</g>'
+            '<circle cx="150" cy="210" r="30" fill="url(#gold)"/><circle cx="150" cy="210" r="22" fill="none" stroke="#8A6424" stroke-width="2"/>'
+            '<path d="M141 205q3-3 6 0M153 205q3-3 6 0M141 218q9 7 18 0" fill="none" stroke="#7E5A1E" stroke-width="2.4" stroke-linecap="round"/>'),
+    'star': ('<g fill="none" stroke="url(#gold)" stroke-width="2.5"><rect x="110" y="170" width="80" height="80"/>'
+             '<rect x="110" y="170" width="80" height="80" transform="rotate(45 150 210)"/></g>'
+             '<circle cx="150" cy="210" r="22" fill="url(#gold)"/><path d="M150 196l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="GEM"/>'),
+}
+
+
+def back(name, c_in, c_out, medallion, pattern, emblem, gem='#B3243A'):
+    tile, size = pattern
+    if tile is None:  # sunburst
+        pat = '<clipPath id="in"><rect x="22" y="22" width="256" height="376" rx="10"/></clipPath>'
+        fill = ('<g clip-path="url(#in)"><circle cx="150" cy="210" r="200" fill="none" stroke="#D4AE55" stroke-opacity=".12" '
+                'stroke-width="400" stroke-dasharray="20.9 20.9"/></g>')
+    else:
+        pat = f'<pattern id="pat" width="{size}" height="{size}" patternUnits="userSpaceOnUse">{tile}</pattern>'
+        fill = '<rect x="22" y="22" width="256" height="376" rx="10" fill="url(#pat)"/>'
+    svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" width="600" height="840">'
+           f'<defs>{GOLD_DEFS}{pat}'
+           f'<radialGradient id="bg" cx=".5" cy=".5" r=".7"><stop offset="0" stop-color="{c_in}"/><stop offset="1" stop-color="{c_out}"/></radialGradient>'
+           f'</defs>'
+           f'<rect x="3" y="3" width="294" height="414" rx="22" fill="url(#bg)"/>{fill}'
+           f'<rect x="12" y="12" width="276" height="396" rx="15" fill="none" stroke="url(#gold)" stroke-width="2.2"/>'
+           f'<rect x="22" y="22" width="256" height="376" rx="10" fill="none" stroke="#D4AE55" stroke-opacity=".5" stroke-width="1"/>'
+           f'<circle cx="150" cy="210" r="78" fill="{medallion}" stroke="url(#gold)" stroke-width="2.5"/>'
+           f'<circle cx="150" cy="210" r="68" fill="none" stroke="#D4AE55" stroke-opacity=".4" stroke-width="1"/>'
+           f'{EMBLEMS[emblem].replace("GEM", gem)}'
+           f'<g fill="url(#gold)"><path d="M150 40l7 9-7 9-7-9z"/><path d="M150 362l7 9-7 9-7-9z"/></g>'
+           f'</svg>')
+    if name == 'classic':
+        (OUT / 'back.svg').write_text(svg)
+    else:
+        (OUT / 'backs').mkdir(exist_ok=True)
+        (OUT / 'backs' / f'{name}.svg').write_text(svg)
+
+
+back('classic', '#2A2466', '#0E1130', '#121637', LATTICE, 'crown')
+back('emerald', '#1F6B5E', '#06201C', '#0A2A25', LATTICE, 'star')
+back('ruby', '#8E2338', '#2A0710', '#330A14', WAVES, 'crown', gem='#2F5DB0')
+back('paisley', '#2F3A86', '#0D1233', '#151B4A', PAISLEY, 'boteh', gem='#C2387F')
+back('starry', '#1B2A5E', '#05081C', '#0A1030', STARS, 'moon')
+back('sun', '#6B3FA0', '#1E0E3A', '#2A1452', RAYS, 'sun')
+print('ok', sorted(str(x.relative_to(OUT)) for x in OUT.rglob('*.svg')))

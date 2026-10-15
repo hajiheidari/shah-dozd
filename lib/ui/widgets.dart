@@ -6,6 +6,7 @@ import '../app/sfx.dart';
 import '../app/state.dart';
 import '../engine/engine.dart';
 import '../l10n/strings.dart';
+import '../shop/catalog.dart';
 import 'theme.dart';
 
 /// True when animations should be skipped (setting or system preference).
@@ -140,15 +141,24 @@ class IconBox extends StatelessWidget {
 
 /// A card's art. [role] null = the card back.
 class CardArt extends StatelessWidget {
-  const CardArt({super.key, this.role, required this.width, this.glow});
+  const CardArt({super.key, this.role, required this.width, this.glow, this.back, this.theme});
   final Role? role;
   final double width;
   final Color? glow;
 
+  /// Shop previews pass a back or theme id; otherwise the equipped one is used.
+  final String? back;
+  final String? theme;
+
   static const ratio = 420 / 300;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) {
+    final wallet = context.dependOnInheritedWidgetOfExactType<AppScope>()?.notifier?.wallet;
+    final asset = role == null
+        ? backAsset(back ?? wallet?.back ?? 'back.classic')
+        : faceAsset(theme ?? wallet?.theme ?? 'theme.gold', role!.art);
+    return Container(
         width: width,
         height: width * ratio,
         decoration: BoxDecoration(
@@ -158,7 +168,7 @@ class CardArt extends StatelessWidget {
           ],
         ),
         child: Image.asset(
-          'assets/cards/${role?.art ?? 'back'}.webp',
+          asset,
           width: width,
           height: width * ratio,
           fit: BoxFit.contain,
@@ -167,6 +177,7 @@ class CardArt extends StatelessWidget {
           excludeFromSemantics: true,
         ),
       );
+  }
 }
 
 /// Turns between two faces around the vertical axis.
@@ -430,7 +441,7 @@ class TopBar extends StatelessWidget {
     final s = S.of(context);
     return Row(children: [
       IconBox(
-        icon: s.rtl ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded,
+        icon: Icons.arrow_back_rounded, // mirrored by Flutter in RTL
         label: s.t('back'),
         onPressed: onBack ?? () => Navigator.maybePop(context),
       ),
@@ -439,5 +450,73 @@ class TopBar extends StatelessWidget {
       ),
       SizedBox(width: 48, child: trailing),
     ]);
+  }
+}
+
+/// The game's gold coin (a crown stamped on a coin).
+class CoinIcon extends StatelessWidget {
+  const CoinIcon({super.key, this.size = 20});
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => CustomPaint(size: Size.square(size), painter: _CoinPainter());
+}
+
+class _CoinPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final r = size.width / 2;
+    final c = Offset(r, r);
+    canvas.drawCircle(c, r, Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [C.goldLight, C.gold, Color(0xFF8A6424)]).createShader(Offset.zero & size));
+    canvas.drawCircle(c, r * .78, Paint()..color = const Color(0xFF8A6424)..style = PaintingStyle.stroke..strokeWidth = r * .1);
+    final s = r / 10;
+    final crown = Path()
+      ..moveTo(c.dx - 5 * s, c.dy + 3.5 * s)
+      ..lineTo(c.dx - 5.5 * s, c.dy - 3 * s)
+      ..lineTo(c.dx - 2.2 * s, c.dy - .5 * s)
+      ..lineTo(c.dx, c.dy - 4.5 * s)
+      ..lineTo(c.dx + 2.2 * s, c.dy - .5 * s)
+      ..lineTo(c.dx + 5.5 * s, c.dy - 3 * s)
+      ..lineTo(c.dx + 5 * s, c.dy + 3.5 * s)
+      ..close();
+    canvas.drawPath(crown, Paint()..color = const Color(0xFF7E5A1E));
+  }
+
+  @override
+  bool shouldRepaint(_) => false;
+}
+
+/// Coin balance; opens the shop when tapped.
+class CoinPill extends StatelessWidget {
+  const CoinPill({super.key, required this.coins, required this.onTap, required this.label});
+  final int coins;
+  final VoidCallback onTap;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    return Semantics(
+      button: true,
+      label: '$label, ${s.t('shop.coins', {'n': coins})}',
+      child: Material(
+        color: C.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99), side: const BorderSide(color: C.line)),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(99),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              const CoinIcon(size: 22),
+              const SizedBox(width: 8),
+              Text(s.n(coins), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: C.goldLight)),
+              const SizedBox(width: 8),
+              const Icon(Icons.storefront_outlined, size: 18, color: C.goldText),
+            ]),
+          ),
+        ),
+      ),
+    );
   }
 }

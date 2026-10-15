@@ -4,7 +4,7 @@
 
 **نام:** شاه، دزد، وزیر — بازی دورهمی
 
-**توضیح کوتاه (۸۰ نویسه):** بازی نوستالژیک شاه دزد وزیر با یک گوشی؛ بدون اینترنت و بدون تبلیغ
+**توضیح کوتاه (۸۰ نویسه):** بازی نوستالژیک شاه دزد وزیر با یک گوشی؛ بدون اینترنت و بدون تبلیغ اجباری
 
 **توضیح کامل:**
 
@@ -25,16 +25,17 @@
 • شخصیت‌های تصویرسازی‌شده‌ی اختصاصی
 • قانون هر حالت همیشه بالای صفحه
 • جدول امتیاز، تورنمنت و ادامه‌ی بازی نیمه‌کاره
-• چالش‌های بامزه‌ی جلاد برای بازنده (اختیاری)
+• جریمه‌های جلاد برای بازنده، مثل «سیبیل آتشین» (اختیاری)
 • فارسی، انگلیسی و هندی
-• کاملاً بدون اینترنت، بدون ثبت‌نام و بدون هیچ تبلیغی
+• کاملاً بدون اینترنت و بدون ثبت‌نام؛ تبلیغ فقط اگر خودتان برای سکه بخواهید
+• فروشگاه سکه: پشت کارت، قاب کارت و بسته‌های جریمه‌ی جلاد
 • هر چهار حالت رایگان و بدون محدودیت دور
 
 ## English (Google Play, App Store)
 
 **Name:** Shah, Thief & Minister
 
-**Subtitle / short description:** The classic secret-role party game for one phone. Offline, no ads.
+**Subtitle / short description:** The classic secret-role party game for one phone. Offline, no forced ads.
 
 **Full description:**
 
@@ -58,7 +59,8 @@ Four modes:
 • Scores, tournaments, resume an interrupted game
 • Optional funny challenges for the loser
 • English, Persian (فارسی) and Hindi (हिन्दी)
-• Fully offline. No account. No ads. All modes free, unlimited rounds.
+• Fully offline. No account. No forced ads. All modes free, unlimited rounds.
+• Coins for card backs, frames and penalty packs: share with friends or watch an optional ad
 
 **Keywords (App Store):** party game,raja mantri chor sipahi,shah dozd vazir,secret roles,family game,offline,pass and play
 
@@ -86,7 +88,7 @@ Four modes:
 • ख़ास बनाए गए चित्र
 • पारंपरिक 1000/800/500 अंक, टूर्नामेंट
 • हिन्दी, अंग्रेज़ी और फ़ारसी
-• पूरी तरह ऑफ़लाइन, कोई खाता नहीं, कोई विज्ञापन नहीं
+• पूरी तरह ऑफ़लाइन, कोई खाता नहीं, कोई ज़बरदस्ती विज्ञापन नहीं
 
 ## Screenshots to take (per language)
 

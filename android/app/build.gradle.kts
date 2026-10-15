@@ -54,6 +54,8 @@ android {
         create("bazaar") { dimension = "store" }
         create("direct") { dimension = "store" }
     }
+    // Adivery (Iranian ad network) only in the Iranian builds: AdsBridge.kt
+    // is in src/bazaar and src/direct; src/play has an empty stand-in.
 
     buildTypes {
         release {
@@ -72,4 +74,9 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    "bazaarImplementation"("com.adivery:sdk:4.8.3")
+    "directImplementation"("com.adivery:sdk:4.8.3")
 }

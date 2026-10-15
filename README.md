@@ -3,7 +3,7 @@
 The Persian party game *Shah, Dozd, Vazir* and its Indian cousin *Raja Mantri
 Chor Sipahi*, for **one shared phone**: secret roles, four modes for 4–6
 players, original illustrated cards, Persian/English/Hindi, fully offline, no
-ads, no accounts. An [Espadna](https://espadna.com) game.
+forced ads (optional rewarded ads for shop coins), no accounts. An [Espadna](https://espadna.com) game.
 
 | Where | What |
 |---|---|
@@ -49,6 +49,7 @@ python3 tools/gen_sounds.py          # → assets/sounds/*.wav
 lib/engine/      rules: roles, scenarios, secure deal, round resolution, scoring, tournaments (pure Dart)
 lib/l10n/        all texts (fa, en, hi), numerals, role names per mode
 lib/app/         app state + local storage, sounds, Android secure-window channel
+lib/shop/        coins wallet, shop catalog, rewarded ads (AdMob / Adivery)
 lib/premium/     store-independent entitlement interface (no store active)
 lib/ui/          theme (design tokens), shared widgets, screens/
 test/            engine/ (exhaustive rules tests), ui/ (flow + privacy tests)
@@ -62,14 +63,14 @@ docs/            architecture, rules, scoring, design, release, store texts, pri
 
 Docs: [ARCHITECTURE](docs/ARCHITECTURE.md) · [RULES](docs/RULES.md) ·
 [SCORING](docs/SCORING.md) · [DESIGN](docs/DESIGN.md) · [RELEASE](docs/RELEASE.md) ·
-[STORE_LISTING](docs/STORE_LISTING.md) · [PRIVACY](docs/PRIVACY.md) ·
+[MONETIZATION](docs/MONETIZATION.md) · [STORE_LISTING](docs/STORE_LISTING.md) · [PRIVACY](docs/PRIVACY.md) ·
 [STATUS (limitations, open tasks)](docs/STATUS.md)
 
 ## خلاصه به فارسی
 
 بازی دورهمی شاه دزد وزیر با یک گوشی: هر کس کارت را نگه می‌دارد تا نقش مخفی‌اش را
 ببیند، شاه و وزیر معرفی می‌شوند و وزیر دزد را پیدا می‌کند. چهار حالت (کلاسیک ایرانی،
-کلاسیک هندی، نسخه‌ی دلقک ۵ نفره، دو دزد ۶ نفره)، سه زبان، بدون اینترنت و بدون تبلیغ.
+کلاسیک هندی، نسخه‌ی دلقک ۵ نفره، دو دزد ۶ نفره)، سه زبان، بدون اینترنت و بدون تبلیغ اجباری؛ سکه برای فروشگاه با معرفی بازی یا دیدن تبلیغ اختیاری.
 نسخه‌ی وب روی `shahdozd.espadna.com` و صفحه‌ی معرفی روی `espadna.com/shahdozd-app/`
 منتشر می‌شود و نسخه‌ی `.ir` خودکار از روی آن‌ها کپی می‌شود. راهنمای انتشار برای
 گوگل‌پلی، کافه‌بازار، APK مستقیم، App Store و وب در [docs/RELEASE.md](docs/RELEASE.md) است.

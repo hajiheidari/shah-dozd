@@ -62,6 +62,7 @@ android {
             // Without android/key.properties the release build is signed with
             // the debug key: fine for testing, never for a store upload.
             signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 }

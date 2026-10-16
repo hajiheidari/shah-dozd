@@ -257,7 +257,7 @@ await step('availability', async () => {
     log('availability: already set');
     return;
   }
-  const territories = (await all('/v1/territories?limit=200')).filter((t) => !NO_TERRITORIES.includes(t.id));
+  const territories = await all('/v1/territories?limit=200'); // Apple wants every one listed
   await api('POST', '/v2/appAvailabilities', {
     data: {
       type: 'appAvailabilities',
@@ -265,10 +265,10 @@ await step('availability', async () => {
       relationships: { app: rel('apps', app.id), territoryAvailabilities: { data: territories.map((t) => ({ type: 'territoryAvailabilities', id: `\${${t.id}}` })) } },
     },
     included: territories.map((t) => ({
-      type: 'territoryAvailabilities', id: `\${${t.id}}`, attributes: { available: true }, relationships: { territory: rel('territories', t.id) },
+      type: 'territoryAvailabilities', id: `\${${t.id}}`, attributes: { available: !NO_TERRITORIES.includes(t.id) }, relationships: { territory: rel('territories', t.id) },
     })),
   });
-  log(`availability: ${territories.length} territories (not ${NO_TERRITORIES.join(', ')})`);
+  log(`availability: ${territories.length - NO_TERRITORIES.length} territories (not ${NO_TERRITORIES.join(', ')})`);
 });
 
 // ---- Game Center on this version ----

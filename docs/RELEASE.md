@@ -73,9 +73,15 @@ keyPassword=…
 ```
 
 Without it, release builds are signed with the debug key (testing only).
-CI (`.github/workflows/android.yml`) builds all of the above on `main` and
-signs them when the secrets `ANDROID_KEYSTORE_BASE64`,
-`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` exist.
+CI (`.github/workflows/android.yml`) builds all of the above and signs
+them with the upload key kept in Cloudflare Workers KV (namespace
+`mafia-ci`, key `shahdozd-android-upload-key`: base64 PKCS12 keystore, alias
+`upload`, password). The first run on `main` created it. **Never delete or
+replace that entry**: Cafe Bazaar never accepts another key for the app, and
+Google Play only after an upload-key reset. Keep an offline copy too
+(Cloudflare dashboard → Workers KV → mafia-ci). The secrets
+`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`,
+`ANDROID_KEY_PASSWORD` override it if set.
 
 **Google Play.** Play App Signing (recommended), upload the AAB, content
 rating questionnaire (no violence beyond a cartoon sword, no gambling, no

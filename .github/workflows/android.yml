@@ -1,10 +1,14 @@
 # Android: builds the Play bundle (AAB), the Cafe Bazaar APK and the
 # direct-download APKs when app code changes, and by hand.
 #
-# Signing (optional repository secrets; without them the builds are signed
-# with a throwaway debug key and must not be uploaded to a store):
-#   ANDROID_KEYSTORE_BASE64   base64 of the upload keystore (.jks)
-#   ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+# Signing: the upload key is kept in Cloudflare Workers KV (namespace
+# "mafia-ci", key "shahdozd-android-upload-key": base64 keystore, alias and
+# password). The first run on main creates it; every later run reuses it, so
+# Cafe Bazaar and Google Play always see the same key. Never delete that KV
+# entry: Bazaar cannot change an app's key. Repository secrets
+# ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS,
+# ANDROID_KEY_PASSWORD, if set, take precedence. Branch runs without a kept
+# key are debug-signed (testing only).
 # Ad ids (docs/MONETIZATION.md), repository *variables* (Settings → Secrets
 # and variables → Actions → Variables): ADMOB_REWARDED_ANDROID, ADIVERY_APP_ID,
 # ADIVERY_REWARDED. Unset = AdMob test ads / Adivery off.
@@ -16,6 +20,9 @@ on:
     branches: ['**']
     paths: ['lib/**', 'android/**', 'assets/**', 'pubspec.*', '.github/workflows/android.yml']
   workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
 
 jobs:
   android:
@@ -36,15 +43,47 @@ jobs:
       - name: Signing key
         env:
           KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KS_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
         run: |
-          if [[ -z "$KS" ]]; then echo "::warning::No signing secrets: debug-signed builds (not for stores)."; exit 0; fi
-          echo "$KS" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          JKS="$RUNNER_TEMP/upload.jks"
+          if [[ -n "$KS" ]]; then
+            echo "$KS" | base64 -d > "$JKS"
+          elif [[ -n "$CLOUDFLARE_API_TOKEN" ]]; then
+            ns=$(node tools/cf_kv.mjs mafia-ci)
+            url="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/storage/kv/namespaces/$ns/values/shahdozd-android-upload-key"
+            code=$(curl -s -o "$RUNNER_TEMP/key.json" -w '%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$url")
+            if [[ $code == 404 && $IS_MAIN == true ]]; then
+              pass=$(openssl rand -hex 24)
+              echo "::add-mask::$pass"
+              keytool -genkeypair -keystore "$JKS" -storetype PKCS12 -alias upload -keyalg RSA -keysize 4096 -validity 10000 \
+                -storepass "$pass" -keypass "$pass" -dname "CN=Espadna, O=Espadna, C=US" >/dev/null 2>&1
+              jq -n --arg jks "$(base64 -w0 "$JKS")" --arg pass "$pass" '{jks:$jks, alias:"upload", password:$pass}' > "$RUNNER_TEMP/key.json"
+              curl -sf -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H 'Content-Type: text/plain' --data-binary @"$RUNNER_TEMP/key.json" "$url" >/dev/null
+              echo "::notice::Created the Android upload key and kept it in Cloudflare KV (mafia-ci / shahdozd-android-upload-key)."
+            elif [[ $code != 200 ]]; then
+              rm -f "$RUNNER_TEMP/key.json"
+              echo "::warning::No kept Android upload key (HTTP $code): debug-signed builds (not for stores)."; exit 0
+            fi
+            KS_PASSWORD=$(jq -r .password "$RUNNER_TEMP/key.json")
+            echo "::add-mask::$KS_PASSWORD"
+            jq -r .jks "$RUNNER_TEMP/key.json" | base64 -d > "$JKS"
+            KS_ALIAS=$(jq -r .alias "$RUNNER_TEMP/key.json"); KS_KEY_PASSWORD=$KS_PASSWORD
+            rm -f "$RUNNER_TEMP/key.json"
+          else
+            echo "::warning::No signing key: debug-signed builds (not for stores)."; exit 0
+          fi
           cat > android/key.properties <<PROPS
-          storeFile=$RUNNER_TEMP/upload.jks
-          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          storeFile=$JKS
+          storePassword=$KS_PASSWORD
+          keyAlias=$KS_ALIAS
+          keyPassword=$KS_KEY_PASSWORD
           PROPS
+          keytool -list -v -keystore "$JKS" -storepass "$KS_PASSWORD" -alias "$KS_ALIAS" | grep -E 'SHA256:|SHA1:' | sed 's/^/upload key /'
       - name: Google Play (AAB)
         run: flutter build appbundle --release --flavor play --dart-define=CHANNEL=play --dart-define=ADMOB_REWARDED_ANDROID=${{ vars.ADMOB_REWARDED_ANDROID }} --dart-define=ADIVERY_APP_ID=${{ vars.ADIVERY_APP_ID }} --dart-define=ADIVERY_REWARDED=${{ vars.ADIVERY_REWARDED }}
       - name: Cafe Bazaar (APK)

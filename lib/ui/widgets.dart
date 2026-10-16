@@ -16,6 +16,48 @@ bool reduceMotion(BuildContext context) =>
 Duration motion(BuildContext context, int ms) => reduceMotion(context) ? Duration.zero : Duration(milliseconds: ms);
 
 /// Page body: safe area, comfortable width on tablets/desktop, side gutters.
+/// Tablets and large windows: draws the whole app larger, as on a phone held
+/// closer, instead of a small phone layout in a big empty screen. The app is
+/// laid out for a smaller logical size and scaled up (touches, dialogs and the
+/// keyboard follow the same scale).
+class LargeScreenScale extends StatelessWidget {
+  const LargeScreenScale({super.key, required this.child});
+  final Widget child;
+
+  static double scaleFor(Size size) {
+    final shortest = size.shortestSide;
+    if (shortest < 700) return 1;
+    return (shortest / 620).clamp(1.0, 1.65);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final scale = scaleFor(mq.size);
+    if (scale == 1) return child;
+    final size = mq.size / scale;
+    return FittedBox(
+      fit: BoxFit.fill,
+      alignment: Alignment.topLeft,
+      child: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: MediaQuery(
+          data: mq.copyWith(
+            size: size,
+            devicePixelRatio: mq.devicePixelRatio * scale,
+            padding: mq.padding / scale,
+            viewPadding: mq.viewPadding / scale,
+            viewInsets: mq.viewInsets / scale,
+            systemGestureInsets: mq.systemGestureInsets / scale,
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
 class Body extends StatelessWidget {
   const Body({super.key, required this.child, this.maxWidth = 560, this.padding = const EdgeInsets.fromLTRB(16, 12, 16, 16)});
   final Widget child;

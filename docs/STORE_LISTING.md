@@ -90,8 +90,16 @@ Four modes:
 • हिन्दी, अंग्रेज़ी और फ़ारसी
 • पूरी तरह ऑफ़लाइन, कोई खाता नहीं, कोई ज़बरदस्ती विज्ञापन नहीं
 
-## Screenshots to take (per language)
+## Screenshots
 
-1. Home with the four modes · 2. "Hold to see your role" with a card shown ·
-3. The Minister's pick with the rule banner · 4. Result with the Joker bonus ·
-5. Champion screen. Phone 1080×1920+ and iPad 2048×2732.
+Generated from the web build by `tools/store_shots.mjs` into
+`store/screenshots/` (home, setup, held role card, the Minister's guess,
+result, shop, card styles and decks):
+
+| Folder | Size | Store |
+|---|---|---|
+| `iphone/{en,hi}` | 1320×2868 | App Store iPhone 6.9" |
+| `ipad/{en,hi}` | 2064×2752 | App Store iPad 13" |
+| `android/{fa,en,hi}` | 1080×1920 | Google Play, Cafe Bazaar (fa) |
+
+The App Store texts (en-US, hi) are in `store/listing.json`.

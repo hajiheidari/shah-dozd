@@ -1,0 +1,25 @@
+{
+  "_comment": "App Store listing, filled in by tools/appstore_listing.mjs (.github/workflows/appstore.yml). App Store has no Persian; Persian texts for Bazaar/Play are in docs/STORE_LISTING.md. Limits: name and subtitle 30, keywords 100, promotional text 170 characters.",
+  "copyright": "2026 Espadna",
+  "primaryCategory": "GAMES",
+  "primarySubcategoryOne": "GAMES_CARD",
+  "primarySubcategoryTwo": "GAMES_FAMILY",
+  "secondaryCategory": "ENTERTAINMENT",
+  "reviewNotes": "Shah, Thief & Minister is the classic secret-role party game (Raja Mantri Chor Sipahi) for 4 to 6 people around one shared phone. No account or sign-in is needed and everything works offline. To try it: on the home screen tap Persian Classic, keep the four default names, tap Start game; each player taps \"I am …\", presses and holds the card to see their secret role, and passes the phone on. Then the Minister picks the player they think is the Thief and taps Reveal. The coin shop sells only looks (card backs, card styles, decks) and penalty packs for free in-game coins earned by sharing the game link; nothing is sold for money, there are no in-app purchases and no ads in this version. Optional: Game Center (rounds-played leaderboard and achievements) and an iCloud key-value backup of coins and settings. The optional \"Executioner's penalty\" party challenges are mild and can be turned off in Settings.",
+  "locales": {
+    "en-US": {
+      "name": "Shah Dozd Vazir: Party Game",
+      "subtitle": "Secret roles on one phone",
+      "promotionalText": "The party game Iran calls Shah-Dozd-Vazir and India calls Raja Mantri Chor Sipahi, for one shared phone. Four modes, offline, no ads.",
+      "keywords": "raja mantri chor sipahi,shah dozd vazir,party,secret role,family,friends,offline,pass and play,cards",
+      "description": "The party game Iran calls Shah-Dozd-Vazir and India calls Raja Mantri Chor Sipahi, beautifully made for one shared phone.\n\nPass the phone around: each player presses and holds the card to see their secret role. The King and the Minister reveal themselves, and the Minister must point at the Thief. Guess right and the Thief loses; guess wrong and the Thief walks away with the Minister's points!\n\nFOUR MODES\n• Persian Classic (4 players): King, Minister, Thief, Executioner\n• Indian Classic (4 players): Raja, Mantri, Chor, Sipahi, with both local rules\n• Joker Edition (5 players): the Joker bluffs and wins big if the Minister falls for it\n• Two Thieves (6 players): the Minister picks two players, and one thief is enough to win\n\nFAIR AND PRIVATE\nA role shows only while your finger is on the card, and the screen is covered if the app goes to the background. The rule of the mode is always on screen.\n\nSCORES AND TOURNAMENTS\nTraditional 1000 / 800 / 500 points or simple party scoring, a scoreboard, tournaments with a champion, and resume an interrupted game.\n\nTHE EXECUTIONER'S PENALTY\nOptional funny challenges for the loser, like the famous Fiery Moustache.\n\nA SHOP WITHOUT MONEY\nCard backs, card styles (Silver, Persian tile, Khatam inlay, Miniature), whole redrawn decks and new penalty packs, all for free game coins earned by sharing the game. Nothing is sold for money.\n\nGAME CENTER AND ICLOUD\nA rounds-played leaderboard and achievements, and your coins and items backed up in your own iCloud, plus a recovery code for any device.\n\nIn English, Persian (فارسی) and Hindi (हिन्दी). Fully offline. No account. No ads. All modes free, unlimited rounds."
+    },
+    "hi": {
+      "name": "राजा मंत्री चोर सिपाही गेम",
+      "subtitle": "एक फ़ोन पर गुप्त भूमिकाएँ",
+      "promotionalText": "बचपन का राजा मंत्री चोर सिपाही, अब एक फ़ोन पर सबके लिए! चार मोड, बिना इंटरनेट, बिना विज्ञापन।",
+      "keywords": "राजा मंत्री चोर सिपाही,raja mantri chor sipahi,पार्टी गेम,परिवार,दोस्त,ऑफ़लाइन,कार्ड",
+      "description": "बचपन का राजा मंत्री चोर सिपाही, अब एक फ़ोन पर सबके लिए!\n\nफ़ोन घुमाइए: हर खिलाड़ी कार्ड दबाए रखकर चुपके से अपनी भूमिका देखता है। राजा और मंत्री अपनी पहचान बताते हैं, और मंत्री को चोर पकड़ना है। सही अंदाज़ा तो चोर हारा; ग़लत अंदाज़ा तो मंत्री के अंक चोर ले गया!\n\nचार मोड\n• भारतीय क्लासिक (4 खिलाड़ी): राजा, मंत्री, चोर, सिपाही — चोर कौन ढूँढे, दोनों स्थानीय नियम\n• फ़ारसी क्लासिक (4 खिलाड़ी): बादशाह, वज़ीर, चोर, जल्लाद\n• जोकर संस्करण (5 खिलाड़ी): जोकर चोर होने का नाटक करता है\n• दो चोर (6 खिलाड़ी): मंत्री दो लोगों को चुनता है; जीत के लिए एक चोर काफ़ी है\n\nनिष्पक्ष और गुप्त\nभूमिका तभी दिखती है जब उँगली कार्ड पर हो। हर मोड का नियम हमेशा स्क्रीन पर।\n\nअंक और टूर्नामेंट\nपारंपरिक 1000 / 800 / 500 अंक या सरल पार्टी अंक, स्कोरबोर्ड, टूर्नामेंट और अधूरा खेल फिर से शुरू करें।\n\nबिना पैसे की दुकान\nकार्ड के पीछे के डिज़ाइन, कार्ड स्टाइल, पूरी नई गड्डियाँ और नई सज़ाएँ — सब मुफ़्त गेम सिक्कों से, जो गेम शेयर करके मिलते हैं। पैसे से कुछ नहीं बिकता।\n\nGame Center और iCloud\nखेले गए राउंड का लीडरबोर्ड और उपलब्धियाँ, और आपके सिक्के आपके अपने iCloud में सुरक्षित।\n\nहिन्दी, अंग्रेज़ी और फ़ारसी में। पूरी तरह ऑफ़लाइन, कोई खाता नहीं, कोई विज्ञापन नहीं।"
+    }
+  }
+}

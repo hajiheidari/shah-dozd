@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../l10n/strings.dart';
+import '../ui/widgets.dart' show LargeScreenScale;
 import '../ui/screens/home.dart';
 import '../ui/theme.dart';
 import 'sfx.dart';
@@ -29,7 +30,7 @@ class ShahDozdApp extends StatelessWidget {
                 locale: lang.locale,
                 supportedLocales: [for (final l in Lang.values) l.locale],
                 localizationsDelegates: GlobalMaterialLocalizations.delegates,
-                builder: (context, child) => Directionality(textDirection: lang.direction, child: child!),
+                builder: (context, child) => LargeScreenScale(child: Directionality(textDirection: lang.direction, child: child!)),
                 home: const HomeScreen(),
               ),
             );

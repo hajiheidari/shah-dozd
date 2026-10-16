@@ -104,6 +104,16 @@ record must exist in App Store Connect with bundle id `com.espadna.shahdozd`
 The signing profile includes the Game Center and iCloud (key-value storage)
 capabilities (`Runner/Runner.entitlements`).
 
+**App Store listing and review:** `.github/workflows/appstore.yml` (by
+hand) fills in everything the API allows from `store/listing.json` and
+`store/screenshots/`: categories, age rating, free price, availability (all
+territories except mainland China, which needs a game licence), texts,
+screenshots, the build, Game Center on the version, App Review notes and
+contact (the Mafia app's contact when none is given), and with *submit*
+sends the version to App Review. By hand, once, in App Store Connect: App
+Privacy → *Data Not Collected*. The account is registered as an EU trader
+(DSA), so the EU storefronts are included.
+
 **Game Center:** `.github/workflows/gamecenter.yml` creates the leaderboard
 and achievements from `ios/gamecenter/gamecenter.json` (with the images
 `ios/gamecenter/<key>.png`) through the App Store Connect API. It is

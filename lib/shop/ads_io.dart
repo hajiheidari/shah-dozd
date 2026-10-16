@@ -11,7 +11,8 @@ RewardedAds createRewardedAds() {
   switch (currentChannel) {
     case Channel.googlePlay:
     case Channel.appStore:
-      return _AdMob(Platform.isIOS ? AdIds.admobIos : AdIds.admobAndroid);
+      final unit = Platform.isIOS ? AdIds.admobIos : AdIds.admobAndroid;
+      return unit.isEmpty ? const NoAds() : _AdMob(unit);
     case Channel.cafeBazaar:
     case Channel.directApk:
       if (AdIds.adiveryApp.isEmpty || AdIds.adiveryRewarded.isEmpty || !Platform.isAndroid) return const NoAds();

@@ -7,6 +7,8 @@
 ///   web            → none (the button is hidden)
 library;
 
+import 'package:flutter/foundation.dart' show kReleaseMode;
+
 import 'ads_stub.dart' if (dart.library.io) 'ads_io.dart' as impl;
 
 abstract interface class RewardedAds {
@@ -30,14 +32,14 @@ class NoAds implements RewardedAds {
   Future<bool> show() async => false;
 }
 
-/// Ad unit ids. AdMob ids default to Google's public *test* units until real
-/// ones are passed at build time; Adivery ids are empty (ads off) until set.
+/// Ad unit ids, passed at build time. Until real ones are set, store
+/// (release) builds have no ads at all (the shop hides the button); debug
+/// builds use Google's public *test* units. Adivery is off until set.
 abstract final class AdIds {
   static const _admobAndroid = String.fromEnvironment('ADMOB_REWARDED_ANDROID');
   static const _admobIos = String.fromEnvironment('ADMOB_REWARDED_IOS');
-  // An empty value (CI variable not set yet) means Google's test units.
-  static String get admobAndroid => _admobAndroid.isEmpty ? 'ca-app-pub-3940256099942544/5224354917' : _admobAndroid;
-  static String get admobIos => _admobIos.isEmpty ? 'ca-app-pub-3940256099942544/1712485313' : _admobIos;
+  static String get admobAndroid => _admobAndroid.isNotEmpty || kReleaseMode ? _admobAndroid : 'ca-app-pub-3940256099942544/5224354917';
+  static String get admobIos => _admobIos.isNotEmpty || kReleaseMode ? _admobIos : 'ca-app-pub-3940256099942544/1712485313';
   static const adiveryApp = String.fromEnvironment('ADIVERY_APP_ID');
   static const adiveryRewarded = String.fromEnvironment('ADIVERY_REWARDED');
 }

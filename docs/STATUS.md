@@ -44,6 +44,15 @@ Updated 2026-10-15.
 * Web PWA offline: the service worker is written and registered on HTTPS
   only; offline reload must be checked on the deployed HTTPS site.
 
+## Next version (owner's requests)
+
+* **Arabic** (ar, right-to-left) as a fourth language: every key in
+  `lib/l10n/strings.dart` and `lib/l10n/penalties.dart`, the language
+  picker, Arabic fonts and digits, landing pages (`tools/landing.py`, `ar/`),
+  the App Store listing (`store/listing.json`, locale `ar-SA`, screenshots via
+  `tools/store_shots.mjs`), Game Center texts (`ios/gamecenter/gamecenter.json`)
+  and the Play/Bazaar texts (docs/STORE_LISTING.md).
+
 ## Known limitations
 
 * No background music/ambience (only sound effects). Optional for later.

@@ -2,8 +2,8 @@
 
 Paste the English text below into App Store Connect → the app → App Review
 (Resolution Center) → Reply. Do **not** resubmit; Apple asks for a reply
-when the app is not spam. In answer 5, keep only the apps that are published
-on this developer account.
+when the app is not spam. Answer 5 lists Mafia God, Tiaro and Adadi; add or remove
+apps to match what is on this developer account.
 
 ---
 
@@ -27,7 +27,7 @@ Families and groups of friends who meet in person: Persian-speaking families (in
 
 **4. Beta testing and feedback applied**
 
-I am a one-person studio, so I did the testing myself: I installed every TestFlight build (builds 2 to 5, October 2026) on my own devices and played full rounds in every mode and language. Problems I found and fixed before this build:
+I am an individual developer working alone, so I did the testing myself: I installed every TestFlight build (builds 2 to 5, October 2026) on my own devices and played full rounds in every mode and language. Problems I found and fixed before this build:
 
 - The decorative Persian title font was hard to read, so I switched to a clear typeface.
 - The four mode cards had different sizes in English and Hindi, so I made them uniform.
@@ -40,13 +40,11 @@ I am a one-person studio, so I did the testing myself: I installed every TestFli
 
 **5. Standalone or part of a suite**
 
-It is a standalone game. My studio, Espadna, makes a few other apps. I built them separately, one at a time, each with its own code, rules and art. Once my developer account was ready, I submitted the ones that were finished within a short time, which is why several reached review together. I will space out future submissions. The other apps:
+It is a standalone game. This is my personal developer account; Espadna is the name I publish my games under. I built my apps separately, one at a time, each with its own code, rules and art. Once my developer account was ready, I submitted the ones that were finished within a short time, which is why several reached review together. I will space out future submissions. My other apps on the App Store:
 
 - Mafia God: a narrator tool for the Mafia game (6 or more players, night actions and voting)
-- Dorehami Pantomime: charades
 - Tiaro: a single-player daily logic puzzle
 - Adadi: a single-player math crossword
-- Ludo Dosti: the Ludo board game
 
 Shah Dozd Vazir is the only one about this game: it has fixed roles for 4 to 6 players, a Minister's guess and point scoring. None of the others deal roles, guess a thief or keep this kind of score.
 
@@ -64,7 +62,7 @@ No, beyond standard frameworks: Flutter, Apple's GameKit, and open-source packag
 
 **9. Created for a client or third party?**
 
-No. Espadna is my own studio, and this account belongs to it. The concept is a traditional game, and the content and branding are mine. Nothing was supplied by a client, partner or template provider.
+No. I am an individual developer and this is my own account; Espadna is just my brand name, not a company or a client. The concept is a traditional game, and the content and branding are mine. Nothing was supplied by a client, partner or template provider.
 
 Thank you for taking another look. I am happy to provide a short video of the app in use if that helps.
 

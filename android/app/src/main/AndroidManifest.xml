@@ -39,6 +39,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Adivery's dependencies (Apptimize/Countly push) declare
+             android.test.runner as required, which hides the app on phones
+             without it (Cafe Bazaar flags this). Nothing uses it at run time. -->
+        <uses-library android:name="android.test.runner" android:required="false" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

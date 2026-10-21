@@ -92,6 +92,20 @@ jobs:
         run: |
           flutter build apk --release --flavor direct --dart-define=CHANNEL=apk --dart-define=ADMOB_REWARDED_ANDROID=${{ vars.ADMOB_REWARDED_ANDROID }} --dart-define=ADIVERY_APP_ID=${{ vars.ADIVERY_APP_ID }} --dart-define=ADIVERY_REWARDED=${{ vars.ADIVERY_REWARDED }}
           flutter build apk --release --flavor direct --dart-define=CHANNEL=apk --split-per-abi --dart-define=ADMOB_REWARDED_ANDROID=${{ vars.ADMOB_REWARDED_ANDROID }} --dart-define=ADIVERY_APP_ID=${{ vars.ADIVERY_APP_ID }} --dart-define=ADIVERY_REWARDED=${{ vars.ADIVERY_REWARDED }}
+      - name: No required optional libraries (Cafe Bazaar hides such apps)
+        run: |
+          aapt2=$(ls -d "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)
+          for apk in build/app/outputs/flutter-apk/app-bazaar-release.apk build/app/outputs/flutter-apk/app-direct-release.apk; do
+            # Every <uses-library> must say required=false.
+            bad=$("$aapt2" dump xmltree --file AndroidManifest.xml "$apk" | awk '
+              /E: uses-library/ { if (lib != "" && !opt) print lib; lib = "?"; opt = 0; next }
+              lib != "" && /android:name\(/ { match($0, /"[^"]*"/); lib = substr($0, RSTART + 1, RLENGTH - 2); next }
+              lib != "" && /android:required\(.*=false/ { opt = 1; next }
+              lib != "" && /E: / { if (!opt) print lib; lib = "" }
+              END { if (lib != "" && !opt) print lib }')
+            if [[ -n "$bad" ]]; then echo "::error::$apk requires: $bad"; exit 1; fi
+          done
+          echo "all uses-library entries are optional"
       - uses: actions/upload-artifact@v4
         with:
           name: shahdozd-android

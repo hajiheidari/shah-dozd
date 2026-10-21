@@ -28,10 +28,10 @@ I am an individual developer and tested it myself on my iPhone, in the web versi
 - a scaled-up layout on iPad
 
 5. Standalone or suite
-Standalone. This is my personal developer account; Espadna is my brand name. My only published app is Dorehami: Pantomime & Heads Up, a charades and word-guessing game. I built my other games over the past weeks, one at a time, each with its own code, rules and art, and submitted the finished ones close together. That is why Shah Dozd Vazir, Mafia God, Tiaro and Adadi reached review at the same time. I will space out future submissions. None of the others deals roles, has a thief to find or uses this scoring.
+Standalone. This is my personal developer account; Espadna is my brand name. My only published app is Dorehami: Pantomime & Heads Up, a charades and word-guessing game. I built my other games over the past weeks, one at a time, each with its own code, rules and art, and submitted the finished ones close together. That is why Shah Dozd Vazir, Mafia God, Tiaro, Adadi and Ludo Dosti reached review at the same time. I will space out future submissions. None of the others deals roles, has a thief to find or uses this scoring.
 
 6. Could it be part of another app?
-No. Dorehami is about acting out and guessing words, Mafia God is a narrator tool for a long elimination game, and Tiaro and Adadi are single-player puzzles. Shah-Dozd-Vazir is a different traditional game with its own rules and audience, and players search for it by its own name.
+No. Dorehami is about acting out and guessing words, Mafia God is a narrator tool for a long elimination game, Tiaro and Adadi are single-player puzzles, and Ludo Dosti is the Ludo board game. Shah-Dozd-Vazir is a different traditional game with its own rules and audience, and players search for it by its own name.
 
 7. Code shared with my other apps
 It is its own Flutter codebase: the game engine, screens, art, sounds and texts were written for it. The only shared parts are a small native helper (about 100 lines) for Game Center and iCloud key-value backup, adapted from Mafia God, and build scripts that are not part of the app. The fonts are open source.

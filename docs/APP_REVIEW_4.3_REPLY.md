@@ -1,69 +1,45 @@
-# Reply to App Review: Guidelines 4.3 and 4.2.6 (version 1.2.0)
+Hello, and thank you for the review. Shah Dozd Vazir is my own original work, not a copy or a template, so I am replying instead of resubmitting.
 
-Paste the English text below into App Store Connect → the app → App Review
-(Resolution Center) → Reply. Do **not** resubmit; Apple asks for a reply
-when the app is not spam. Answer 5 lists Mafia God, Tiaro and Adadi; add or remove
-apps to match what is on this developer account.
+1. What it does
+Shah-Dozd-Vazir ("King, Thief, Minister") is a traditional party game from Iran, known in India as Raja Mantri Chor Sipahi. On paper it needs folded slips, a fair dealer and a scorekeeper. The app replaces them with one phone passed around the table:
+- It deals the roles with a secure random generator.
+- Each player sees their role only while pressing and holding the card, and the screen is covered if the app goes to the background.
+- It guides the Minister's guess, applies the scoring, keeps a scoreboard and tournament, and can resume an interrupted game.
 
----
+2. Users
+Families and friends playing in person, 4 to 6 people of all ages: Persian speakers for whom this is a childhood game, Indian families who know it as Raja Mantri Chor Sipahi, and English-speaking groups who want a short hidden-role game. It works offline, for gatherings and trips.
 
-Hello, and thank you for the review. I believe Shah Dozd Vazir is not a duplicate, not an opportunistic variant and not built from a template, so I am replying instead of resubmitting. My answers:
+3. What is different
+- Four rule sets, with the rule always on screen: Persian with the Executioner, Indian with both local rules, a 5-player Joker Edition and a 6-player Two Thieves mode.
+- A private press-and-hold reveal made for pass-and-play.
+- Persian first, plus English and Hindi.
+- Original illustrated characters and card styles.
+- No account, ads, tracking or purchases. The cosmetic shop uses only free in-game coins.
 
-**1. What the app does and the problem it solves**
+4. Testing
+I am an individual developer and tested it myself on my iPhone, in the web version and on Android, over several TestFlight builds. That testing led to:
+- a clearer Persian title font
+- equal mode-card sizes in every language
+- a correctly mirrored back arrow in Persian
+- typing the number of rounds
+- stronger optional penalties for the loser
+- a home screen without scrolling
+- a rebalanced coin shop with a first-launch explanation
+- a scaled-up layout on iPad
 
-Shah-Dozd-Vazir ("King, Thief, Minister") is a traditional party game played in Iran, and in India as Raja Mantri Chor Sipahi. On paper it needs folded slips, someone who deals without peeking, and someone who keeps score; slips get seen, deals get disputed and the scores get lost. The app replaces all of that with one shared phone at the table. It deals the roles fairly with a secure random generator. Each player privately looks at their own role by pressing and holding the card, and the role disappears when they let go. The screen is covered if the app goes to the background mid-deal, so nobody can peek. The app then guides the Minister's guess, applies the scoring rules (traditional 1000/800/500 or simple party scoring), keeps a scoreboard across rounds, runs tournaments with a champion, and can resume an interrupted game. The people play with each other face to face; the app is the dealer, the referee and the scorekeeper.
+5. Standalone or suite
+Standalone. This is my personal developer account; Espadna is my brand name. My only published app is Dorehami: Pantomime & Heads Up, a charades and word-guessing game. I built my other games over the past weeks, one at a time, each with its own code, rules and art, and submitted the finished ones close together. That is why Shah Dozd Vazir, Mafia God, Tiaro and Adadi reached review at the same time. I will space out future submissions. None of the others deals roles, has a thief to find or uses this scoring.
 
-**2. Intended users**
+6. Could it be part of another app?
+No. Dorehami is about acting out and guessing words, Mafia God is a narrator tool for a long elimination game, and Tiaro and Adadi are single-player puzzles. Shah-Dozd-Vazir is a different traditional game with its own rules and audience, and players search for it by its own name.
 
-Families and groups of friends who meet in person: Persian-speaking families (including the diaspora), for whom this is a childhood game; Indian families who know it as Raja Mantri Chor Sipahi; and English-speaking groups looking for a short, simple hidden-role game for 4 to 6 people of mixed ages, from children to grandparents. It is meant for gatherings, holidays and trips, often without internet.
+7. Code shared with my other apps
+It is its own Flutter codebase: the game engine, screens, art, sounds and texts were written for it. The only shared parts are a small native helper (about 100 lines) for Game Center and iCloud key-value backup, adapted from Mafia God, and build scripts that are not part of the app. The fonts are open source.
 
-**3. The need it addresses**
+8. Third-party code
+Only standard frameworks: Flutter, open-source Flutter packages and Apple's GameKit. The Google Mobile Ads SDK is linked for a possible optional ad in the future, but it is not initialised and shows nothing. No template or app-generation service was used.
 
-- **Both traditions and four rule sets.** Persian Classic with the Executioner, Indian Classic with both local rules for who finds the Chor, a Joker Edition for 5 players (the Joker bluffs and earns a bonus if the Minister falls for it), and Two Thieves for 6 players (the Minister picks two people, and one thief is enough to win). The mode's rule is always on screen, which settles arguments at the table.
-- **Pass-and-play on one device, made private.** The press-and-hold reveal and the background cover exist because peeking is the real problem when a phone is passed around.
-- **Persian language.** The app is written in Persian first (right to left, Persian digits), with full English and Hindi.
-- **Offline and respectful.** No account, no internet needed, no ads, no tracking and no purchases. A cosmetic shop (card backs, card styles, redrawn decks, extra penalty packs) uses only free in-game coins.
-- **Original art.** Every character (King, Minister, Thief, Executioner, Sipahi, Joker) and every card style (Persian tile, khatam inlay, miniature) was drawn for this app.
+9. Client or third party
+No. I am an individual developer, and the idea, content and branding are mine. Nothing was supplied by a client, partner or template provider.
 
-**4. Beta testing and feedback applied**
-
-I am an individual developer working alone, so I did the testing myself: I installed every TestFlight build (builds 2 to 5, October 2026) on my own devices and played full rounds in every mode and language. Problems I found and fixed before this build:
-
-- The decorative Persian title font was hard to read, so I switched to a clear typeface.
-- The four mode cards had different sizes in English and Hindi, so I made them uniform.
-- The back arrow pointed the wrong way in Persian (right to left), so I mirrored it.
-- The number of rounds could only be changed with + and −, so I added typing; in Persian the + and − now sit on the correct sides.
-- The loser's penalties felt too mild, so I added "The Executioner's penalty", a set of playful challenges that can be turned off.
-- The home screen scrolled on small phones; it now fits on one screen.
-- The coin rewards were out of balance with the shop prices, so I rebalanced them. A first-launch message now explains the coins and the shop.
-- On iPad the layout looked small, so the whole interface now scales up on tablets.
-
-**5. Standalone or part of a suite**
-
-It is a standalone game. This is my personal developer account; Espadna is the name I publish my games under. I built my apps separately, one at a time, each with its own code, rules and art. Once my developer account was ready, I submitted the ones that were finished within a short time, which is why several reached review together. I will space out future submissions. My other apps on the App Store:
-
-- Mafia God: a narrator tool for the Mafia game (6 or more players, night actions and voting)
-- Tiaro: a single-player daily logic puzzle
-- Adadi: a single-player math crossword
-
-Shah Dozd Vazir is the only one about this game: it has fixed roles for 4 to 6 players, a Minister's guess and point scoring. None of the others deal roles, guess a thief or keep this kind of score.
-
-**6. Could it be an in-app purchase or an addition to another app?**
-
-No. The closest app, Mafia God, is a moderator tool for a long, elimination-based game with a human narrator, night actions and voting. Shah-Dozd-Vazir is a different traditional game, with no narrator, everyone playing, short scored rounds and a winner decided by points. Putting it inside Mafia God would confuse both audiences. Players look for each game by its own name, in Persian and Hindi as well as English.
-
-**7. Code, frameworks or assets shared with my other apps**
-
-The app is its own Flutter codebase: its game engine, user interface, art, sounds and texts were all written for it. The only shared piece is a small native helper of about 100 lines that I reuse across my apps. It connects to Game Center (leaderboard and achievements) and to iCloud key-value storage (to back up coins and settings). My build and upload scripts are shared too, but they are not part of the app. The fonts are standard open-source fonts (Vazirmatn, Noto Sans Devanagari, Cormorant Garamond).
-
-**8. Codebase, SDK or content shared with a third party**
-
-No, beyond standard frameworks: Flutter, Apple's GameKit, and open-source packages for storage, audio and sharing. The Google Mobile Ads SDK is also linked, for an optional rewarded ad I may add later; it is not initialised and shows nothing in this version. No template, white-label product or app-generation service was used. The game is a public-domain folk game; the rules text, penalties, art and sounds are my own.
-
-**9. Created for a client or third party?**
-
-No. I am an individual developer and this is my own account; Espadna is just my brand name, not a company or a client. The concept is a traditional game, and the content and branding are mine. Nothing was supplied by a client, partner or template provider.
-
-Thank you for taking another look. I am happy to provide a short video of the app in use if that helps.
-
----
+Thank you for taking another look. I am happy to send a short video of the app in use.

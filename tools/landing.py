@@ -19,6 +19,11 @@ OUT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'build' / 'land
 BASE = '/shahdozd-app'
 SITE = 'https://espadna.com' + BASE
 GAME = 'https://shahdozd.espadna.com'
+APP_STORE = 'https://apps.apple.com/app/id6823225908'
+BAZAAR = 'https://cafebazaar.ir/app/com.espadna.shahdozd'
+# Published by .github/workflows/android.yml on every signed build of main.
+APK = 'https://github.com/hajiheidari/shah-dozd/releases/latest/download/shah-dozd-vazir.apk'
+APK_32 = 'https://github.com/hajiheidari/shah-dozd/releases/latest/download/shah-dozd-vazir-32bit.apk'
 
 T = {
     'en': {
@@ -29,6 +34,9 @@ T = {
         'tagline': 'The classic party game of Iran and India, for one phone.',
         'play': 'Play now in your browser',
         'play_sub': 'Free · no sign-up · works offline after the first visit',
+        'apple': ('Download on the', 'App Store'),
+        'android': ('apk', 'Download for Android', 'APK file'),
+        'apk_note': ('Android: direct download (about 25 MB). Older phone?', '32-bit version'),
         'modes_h': 'Four modes',
         'modes': [
             ('Persian Classic', '4 players', 'King, Minister, Thief and Executioner. The Minister has one guess.'),
@@ -56,6 +64,8 @@ T = {
         'tagline': 'همان بازی نوستالژیک دورهمی، با یک گوشی برای همه.',
         'play': 'همین حالا بازی کنید',
         'play_sub': 'رایگان · بدون ثبت‌نام · بعد از اولین بار بدون اینترنت هم کار می‌کند',
+        'apple': ('دریافت از', 'App Store'),
+        'android': ('bazaar', 'دریافت از', 'کافه‌بازار'),
         'modes_h': 'چهار حالت بازی',
         'modes': [
             ('کلاسیک ایرانی', '۴ نفر', 'شاه، وزیر، دزد و جلاد. وزیر یک بار حق حدس دارد.'),
@@ -83,6 +93,9 @@ T = {
         'tagline': 'ईरान और भारत का पुराना पार्टी गेम, अब एक फ़ोन पर।',
         'play': 'अभी ब्राउज़र में खेलें',
         'play_sub': 'मुफ़्त · बिना साइन-अप · पहली बार के बाद ऑफ़लाइन भी',
+        'apple': ('डाउनलोड करें', 'App Store'),
+        'android': ('apk', 'Android के लिए डाउनलोड', 'APK फ़ाइल'),
+        'apk_note': ('Android: सीधा डाउनलोड (लगभग 25 MB)। पुराना फ़ोन?', '32-बिट संस्करण'),
         'modes_h': 'चार मोड',
         'modes': [
             ('फ़ारसी क्लासिक', '4 खिलाड़ी', 'बादशाह, वज़ीर, चोर और जल्लाद। वज़ीर को एक अंदाज़ा मिलता है।'),
@@ -124,6 +137,13 @@ nav.langs a[aria-current]{color:var(--gold-t);text-decoration:none}
 .hero p.tag{font-size:19px;color:var(--muted);margin:10px 0 24px}
 .cta{display:inline-flex;flex-direction:column;background:var(--gold);color:#1A1530;text-decoration:none;border-radius:16px;padding:14px 26px;font-weight:900;font-size:19px;min-height:54px}
 .cta small{font-weight:400;font-size:13px}
+.stores{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.store{display:inline-flex;align-items:center;gap:10px;min-width:190px;color:#fff;background:#000;border:2px solid var(--line);border-radius:14px;padding:8px 16px 8px 12px;text-decoration:none;line-height:1.25;text-align:start}
+.store svg{width:32px;height:32px;flex:none}
+.store small{display:block;font-size:12px;opacity:.8}
+.store b{display:block;font-size:19px;font-weight:900}
+.apk-note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.apk-note a{color:var(--muted)}
 .fan{position:relative;height:340px}
 .fan img{position:absolute;width:190px;top:20px;left:50%;filter:drop-shadow(0 18px 30px rgba(0,0,0,.5))}
 .fan img:nth-child(1){transform:translateX(-120%) rotate(-12deg)}
@@ -145,9 +165,39 @@ h2{font-weight:900;font-size:28px;color:var(--gold-t);margin:36px 0 16px}
 .feat p{margin:4px 0 0;color:var(--muted);font-size:15px}
 ol.how{padding-inline-start:22px;font-size:16px;color:var(--muted)}
 footer{margin:48px 0 28px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
-@media (max-width:820px){.hero{grid-template-columns:1fr;text-align:center}.fan{height:300px}.modes{grid-template-columns:repeat(2,minmax(0,1fr))}.feats{grid-template-columns:1fr}}
+@media (max-width:820px){.hero{grid-template-columns:1fr;text-align:center}.stores{justify-content:center}.fan{height:300px}.modes{grid-template-columns:repeat(2,minmax(0,1fr))}.feats{grid-template-columns:1fr}}
 @media (max-width:420px){.fan img{width:150px}.fan img:nth-child(3){width:170px}.mode .art img{width:66px}.mode .art img:nth-child(2){width:78px}}
 """
+
+
+APPLE_SVG = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.37 1.43c0 1.14-.5 2.27-1.18 3.08-.74.9-1.99 '
+             '1.57-2.99 1.57-.12 0-.23-.02-.3-.03-.01-.06-.04-.22-.04-.39 0-1.15.57-2.27 1.2-2.98.81-.94 2.15-1.64 3.25-1.68.03.13.06.28.06.43zm4.56 '
+             '15.71c-.03.07-.46 1.58-1.52 3.12-.94 1.34-1.94 2.71-3.43 2.71-1.52 0-1.9-.88-3.63-.88-1.7 0-2.3.91-3.67.91-1.38 0-2.33-1.26-3.43-2.8C4 '
+             '18.38 2.96 15.57 2.96 12.92c0-4.28 2.8-6.55 5.55-6.55 1.45 0 2.68.95 3.6.95.87 0 2.22-1.01 3.9-1.01.62 0 2.89.06 4.38 2.19-.13.09-2.39 '
+             '1.37-2.39 4.19 0 3.26 2.86 4.42 2.96 4.45z"/></svg>')
+ANDROID_SVG = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3DDC84" d="M17.6 9.48l1.84-3.18a.63.63 0 0 0-1.09-.63l-1.88 3.24a11.4 '
+               '11.4 0 0 0-8.94 0L5.65 5.67a.64.64 0 0 0-1.09.63L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52zM7 15.25a1.25 1.25 0 1 1 '
+               '0-2.5 1.25 1.25 0 0 1 0 2.5zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>')
+BAZAAR_SVG = ('<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="1" width="22" height="22" rx="6" fill="#00B050"/><path fill="none" '
+              'stroke="#fff" stroke-width="1.8" stroke-linecap="round" d="M8 9V8a4 4 0 0 1 8 0v1"/><path fill="#fff" d="M5.5 9.5h13l-1 '
+              '9.2a1.5 1.5 0 0 1-1.5 1.3H8a1.5 1.5 0 0 1-1.5-1.3z"/></svg>')
+
+
+def stores(t: dict) -> str:
+    """App Store everywhere; Cafe Bazaar in Persian, the direct APK elsewhere."""
+    e = html.escape
+    def button(href, svg, small, big, download=False):
+        return (f'<a class="store" href="{href}"{" download" if download else ""}>{svg}'
+                f'<span><small>{e(small)}</small><b>{e(big)}</b></span></a>')
+    kind, small, big = t['android']
+    out = '<div class="stores">' + button(APP_STORE, APPLE_SVG, *t['apple'])
+    if kind == 'bazaar':
+        out += button(BAZAAR, BAZAAR_SVG, small, big) + '</div>'
+    else:
+        note, old = t['apk_note']
+        out += (button(APK, ANDROID_SVG, small, big, download=True) + '</div>'
+                f'<p class="apk-note">{e(note)} <a href="{APK_32}" download>{e(old)}</a></p>')
+    return out
 
 
 def page(lang: str) -> str:
@@ -195,7 +245,7 @@ def page(lang: str) -> str:
 <header><a class="brand" href="{BASE}{t['path']}"><img src="{BASE}/icon.png" alt="">{e(t['name'])}</a><nav class="langs">{langs}</nav></header>
 <section class="hero">
 <div><h1>{e(t['name'])}</h1><p class="tag">{e(t['tagline'])}</p>
-<a class="cta" href="{GAME}/?lang={lang}">{e(t['play'])}<small>{e(t['play_sub'])}</small></a></div>
+<a class="cta" href="{GAME}/?lang={lang}">{e(t['play'])}<small>{e(t['play_sub'])}</small></a>{stores(t)}</div>
 <div class="fan" aria-hidden="true"><img src="{BASE}/cards/minister.webp" alt=""><img src="{BASE}/cards/thief.webp" alt=""><img src="{BASE}/cards/king.webp" alt=""></div>
 </section>
 <h2>{e(t['modes_h'])}</h2><div class="modes">{modes}</div>

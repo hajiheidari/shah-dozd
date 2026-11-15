@@ -11,8 +11,11 @@
 # key are debug-signed (testing only).
 # Ad ids (docs/MONETIZATION.md), repository *variables* (Settings → Secrets
 # and variables → Actions → Variables): ADMOB_REWARDED_ANDROID, ADIVERY_APP_ID,
-# ADIVERY_REWARDED. Unset = AdMob test ads / Adivery off.
-# Nothing is published: download the files from the run's artifacts.
+# ADIVERY_REWARDED. Unset = no ads in release builds.
+# Direct download: on main, the signed direct APKs (64-bit and 32-bit) are
+# published as the GitHub release v<version> (latest), which the landing
+# pages link to (releases/latest/download/shah-dozd-vazir.apk). Store files
+# (AAB, Bazaar APK) are only in the run's artifacts: upload them by hand.
 name: Android
 
 on:
@@ -23,6 +26,9 @@ on:
 
 concurrency:
   group: android-${{ github.ref }}
+
+permissions:
+  contents: write # the direct-download release
 
 jobs:
   android:
@@ -84,6 +90,7 @@ jobs:
           keyPassword=$KS_KEY_PASSWORD
           PROPS
           keytool -list -v -keystore "$JKS" -storepass "$KS_PASSWORD" -alias "$KS_ALIAS" | grep -E 'SHA256:|SHA1:' | sed 's/^/upload key /'
+          echo "SIGNED=1" >> "$GITHUB_ENV"
       - name: Google Play (AAB)
         run: flutter build appbundle --release --flavor play --dart-define=CHANNEL=play --dart-define=ADMOB_REWARDED_ANDROID=${{ vars.ADMOB_REWARDED_ANDROID }} --dart-define=ADIVERY_APP_ID=${{ vars.ADIVERY_APP_ID }} --dart-define=ADIVERY_REWARDED=${{ vars.ADIVERY_REWARDED }}
       - name: Cafe Bazaar (APK)
@@ -106,6 +113,22 @@ jobs:
             if [[ -n "$bad" ]]; then echo "::error::$apk requires: $bad"; exit 1; fi
           done
           echo "all uses-library entries are optional"
+      - name: Publish the direct download (GitHub release)
+        if: github.ref == 'refs/heads/main' && env.SIGNED == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=$(grep '^version:' pubspec.yaml | sed 's/version: *//; s/+.*//')
+          d="$RUNNER_TEMP/release"; mkdir -p "$d"
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-direct-release.apk "$d/shah-dozd-vazir.apk"
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-direct-release.apk "$d/shah-dozd-vazir-32bit.apk"
+          if gh release view "v$v" >/dev/null 2>&1; then
+            gh release upload "v$v" "$d"/*.apk --clobber
+          else
+            gh release create "v$v" "$d"/*.apk --target "$GITHUB_SHA" --latest --title "Shah, Thief & Minister $v (Android)" \
+              --notes "Android direct download. shah-dozd-vazir.apk: most phones (64-bit). shah-dozd-vazir-32bit.apk: older phones. Also on Cafe Bazaar and the App Store; web: https://shahdozd.espadna.com"
+          fi
+          ls -l "$d"
       - uses: actions/upload-artifact@v4
         with:
           name: shahdozd-android

@@ -93,10 +93,13 @@ release.
 the Persian listing from STORE_LISTING.md. The same signing key must be used
 for every update. No Bazaar SDK is linked yet (Premium is not active).
 
-**Direct download.** Host the universal APK (and the per-ABI ones for small
-downloads), e.g. `espadna.com/shahdozd-app/download/` like Pantomime. Users
-must allow installs from unknown sources. Keep the same key forever, or
-updates will fail to install over the old version.
+**Direct download.** Every signed build of `main` publishes the direct APKs
+as the GitHub release `v<version>` (marked latest): `shah-dozd-vazir.apk`
+(64-bit, most phones) and `shah-dozd-vazir-32bit.apk`. The English and Hindi
+landing pages link to `releases/latest/download/…`; the Persian page links to
+Cafe Bazaar instead, and every language links to the App Store
+(`tools/landing.py`: APP_STORE, BAZAAR, APK). Bump `version` in pubspec.yaml
+for a new release, or the files of the existing release are replaced.
 
 ## iPhone and iPad
 
